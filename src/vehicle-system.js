@@ -60,7 +60,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
  add("roof-antenna",new THREE.CylinderGeometry(.012,.018,.42,6),dark,.48,2.28,.72,0,0,-.12);
  for(const x of [-.72,.72])add("roof-rail",new THREE.BoxGeometry(.055,.055,1.35),chrome,x,2.12,.2);
  add("exhaust-tip",new THREE.CylinderGeometry(.065,.065,.18,10),chrome,.58,.35,1.92,Math.PI/2);
- root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;root.userData.brakeMaterial=tailLamp;root.userData.reverseLights=root.children.filter(o=>o.name==="reverse-light");
+ root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;root.userData.brakeMaterial=tailLamp;root.userData.reverseLights=root.children.filter(o=>o.name==="reverse-light");root.userData.reverseLights.forEach(light=>light.visible=false);
  scene.add(root);return root;
 }
 
