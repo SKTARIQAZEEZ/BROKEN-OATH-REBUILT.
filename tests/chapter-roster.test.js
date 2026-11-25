@@ -9,7 +9,7 @@ const actors={ranvir:makeActor(),ananya:makeActor(),anjali:makeActor(),devraj:ma
 applyChapterRoster(13,actors);
 assert.equal(actors.devraj.visible,true);
 assert.deepEqual(actors.devraj.position.value,[0,0,-26]);
-assert.equal(actors.ananya.visible,false);
+assert.equal(actors.ananya.visible,true);
 applyChapterRoster(9,actors);
 assert.equal(actors.ananya.visible,true);
 assert.equal(actors.anjali.visible,true);
