@@ -25,7 +25,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
   }
   for(const x of [-22,22]){prop(group,new THREE.BoxGeometry(.25,5,.25),metal,x,2.5,-24,"support-column");addCollider(x,-24,.3,.3,5);prop(group,new THREE.BoxGeometry(1.2,.18,.8),warning,x,4.5,-23.8,"warning-sign");}
   for(const x of [-16,0,16]){prop(group,new THREE.BoxGeometry(3,.35,.4),concrete,x,.18,14,"concrete-barricade");addCollider(x,14,3,.4,.35)}
- }else if(["street","homes","safehouse","sports","rooftop"].includes(kind)){
+ }else if(["street","homes","safehouse","rooftop"].includes(kind)){
   // Power poles and sagging cables establish a lived-in neighbourhood silhouette.
   for(const x of [-23,-7,9,23]){
    prop(group,new THREE.CylinderGeometry(.12,.17,8,8),wood,x,4,16,"utility-pole");addCollider(x,16,.35,.35,8);
