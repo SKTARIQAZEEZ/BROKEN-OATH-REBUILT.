@@ -6,5 +6,5 @@ assert.equal(new Set(CHAPTER_ENVIRONMENT_NAMES).size,15);
 assert.equal(CHAPTER_ENVIRONMENT_KINDS.length,15);
 assert.ok(CHAPTER_ENVIRONMENT_KINDS.includes("warehouse"));
 assert.ok(CHAPTER_ENVIRONMENT_KINDS.includes("ceremony"));
-const scene=new THREE.Scene();for(let i=0;i<15;i++){const env=buildChapterEnvironment(scene,i);assert.ok(env.group.children.length>0);assert.ok(env.colliders.every(c=>Number.isFinite(c.x)&&c.halfX>0));if(["warehouse","interior","fortress","compound","safehouse"].includes(env.kind))assert.ok(env.group.children.some(o=>o.name==="interior-floor"));env.dispose()}assert.equal(scene.children.length,0);
+const scene=new THREE.Scene();for(let i=0;i<15;i++){const env=buildChapterEnvironment(scene,i);assert.ok(env.group.children.length>0);assert.ok(env.group.children.some(o=>["overhead-pipe","utility-pole","burned-masonry","warm-string-light"].includes(o.name)),"environment must contain kind-specific set dressing");assert.ok(env.colliders.every(c=>Number.isFinite(c.x)&&c.halfX>0));if(["warehouse","interior","fortress","compound","safehouse"].includes(env.kind))assert.ok(env.group.children.some(o=>o.name==="interior-floor"));env.dispose()}assert.equal(scene.children.length,0);
 console.log("Environment checks passed: 15 chapter spaces, furnished interiors and disposable collision geometry.");
