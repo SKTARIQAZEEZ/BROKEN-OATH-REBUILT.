@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {chapterRoster,applyChapterRoster} from "../src/chapter-roster.js";
+assert.equal(Object.keys(chapterRoster(0)).sort().join(","),"ananya,ranvir");
+assert.ok(chapterRoster(9).ananya);
+assert.ok(chapterRoster(9).anjali);
+assert.ok(chapterRoster(13).devraj);
+const makeActor=()=>({visible:false,position:{set(...p){this.value=p}}});
+const actors={ranvir:makeActor(),ananya:makeActor(),anjali:makeActor(),devraj:makeActor()};
+applyChapterRoster(13,actors);
+assert.equal(actors.devraj.visible,true);
+assert.deepEqual(actors.devraj.position.value,[0,0,-26]);
+assert.equal(actors.ananya.visible,false);
+applyChapterRoster(9,actors);
+assert.equal(actors.ananya.visible,true);
+assert.equal(actors.anjali.visible,true);
+assert.equal(actors.devraj.visible,false);
+console.log("Chapter roster tests passed: cast visibility and story locations.");
