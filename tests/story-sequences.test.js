@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {chapterTransitionSequence,isFamilyReunionTransition} from "../src/story-sequences.js";
+import {STORY_CINEMATICS} from "../src/campaign-cinematics.js";
+assert.deepEqual(chapterTransitionSequence(8,9),[],"Reunion must not play before the warehouse rescue");
+const reunion=chapterTransitionSequence(9,10);
+assert.equal(reunion.length,STORY_CINEMATICS.CH10_REUNION.length+STORY_CINEMATICS.CH11_BROTHERHOOD.length);
+assert.deepEqual(reunion.slice(0,STORY_CINEMATICS.CH10_REUNION.length),STORY_CINEMATICS.CH10_REUNION);
+assert.deepEqual(reunion.slice(STORY_CINEMATICS.CH10_REUNION.length),STORY_CINEMATICS.CH11_BROTHERHOOD);
+assert.equal(isFamilyReunionTransition(9,10),true);
+assert.equal(isFamilyReunionTransition(8,9),false);
+assert.ok(chapterTransitionSequence(13,14).length>0,"Final promise sequence should remain authored");
+console.log("Story sequence checks passed: reunion follows rescue and precedes brotherhood reveal.");
