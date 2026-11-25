@@ -47,7 +47,7 @@ export function buildChapterEnvironment(scene,index){
  const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z],i)=>new THREE.Vector3(x,.12,z));
  const spawn=new THREE.Vector3(0,0,8);
  scene.add(group);
- return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},dispose(){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}};
+ return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},resolvePosition(position,radius=.42){const p=position.clone();p.x=THREE.MathUtils.clamp(p.x,-28+radius,28-radius);p.z=THREE.MathUtils.clamp(p.z,-28+radius,28-radius);for(const box of colliders){const minX=box.x-box.halfX-radius,maxX=box.x+box.halfX+radius,minZ=box.z-box.halfZ-radius,maxZ=box.z+box.halfZ+radius;if(p.x>minX&&p.x<maxX&&p.z>minZ&&p.z<maxZ){const dx=Math.min(Math.abs(p.x-minX),Math.abs(maxX-p.x)),dz=Math.min(Math.abs(p.z-minZ),Math.abs(maxZ-p.z));if(dx<dz)p.x=p.x<box.x?minX:maxX;else p.z=p.z<box.z?minZ:maxZ}}return p},dispose(){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}};
 }
 export const CHAPTER_ENVIRONMENT_NAMES=CHAPTER_ZONES.map(x=>x[0]);
 export const CHAPTER_ENVIRONMENT_KINDS=CHAPTER_ZONES.map(x=>x[3]);
