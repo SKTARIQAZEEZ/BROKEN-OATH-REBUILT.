@@ -13,15 +13,15 @@ for(const part of ["front-grille","front-windshield","rear-windshield","side-mir
  assert.ok(vehicleParts.includes(part),"vehicle exterior should include "+part);
 }
 assert.equal(vehicles.vehicle.userData.wheels.length,4,"all four wheels must remain independently animated");
-assert.equal(vehicles.vehicle.userData.reverseLights.every(light=>!light.visible),true,"reverse lamps start inactive");
-vehicles.update(.1,{brake:true},player);
-assert.ok(vehicles.vehicle.userData.brakeMaterial.emissiveIntensity>1,"brake lamps brighten under braking");
-vehicles.speed=-1;vehicles.update(.1,{},player);
-assert.ok(vehicles.vehicle.userData.reverseLights.every(light=>light.visible),"reverse lamps illuminate while reversing");
-vehicles.speed=0;vehicles.update(.1,{},player);
 assert.ok(environment.colliders.includes(vehicles.collider),"parked vehicle must block on-foot movement");
 const player=new THREE.Group();player.position.copy(vehicles.position).add(new THREE.Vector3(0,0,3));scene.add(player);
 assert.deepEqual(vehicles.toggle(player),{ok:true,driving:true});
+assert.equal(vehicles.vehicle.userData.reverseLights.every(light=>!light.visible),true,"reverse lamps start inactive");
+vehicles.update(.1,{brake:true},player);
+assert.ok(vehicles.vehicle.userData.brakeMaterial.emissiveIntensity>1,"brake lamps brighten under braking");
+vehicles.update(.1,{backward:true},player);
+assert.ok(vehicles.speed<0,"reverse input must move the vehicle backwards");
+assert.ok(vehicles.vehicle.userData.reverseLights.every(light=>light.visible),"reverse lamps illuminate while reversing");
 assert.equal(player.visible,false,"player mesh hides while seated");
 assert.ok(environment.colliders.includes(vehicles.collider),"moving vehicle must remain a live obstacle for AI and other actors");
 vehicles.update(.5,{forward:true},player);
