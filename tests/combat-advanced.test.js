@@ -1,1 +1,16 @@
-import assert from "node:assert/strict";import {CombatSystem} from "../src/combat.js";const c=new CombatSystem({range:3,damage:1,cooldown:.1,maxCombo:3});const actor={position:{distanceTo:()=>1}},enemy={visible:true,position:{},userData:{hp:10}};const a=c.attack(actor,[enemy]);assert.equal(a.combo,1);c.update(.2);const b=c.attack(actor,[enemy]);assert.equal(b.combo,2);assert.equal(c.dodge(),true);assert.equal(c.receiveHit(10).evaded,true);c.dodging=0;c.update(.2);c.setBlocking(true);assert.equal(c.receiveHit(10).blocked,true);assert.equal(c.attack(actor,[enemy]).reason,"blocking");console.log("Advanced combat state tests passed.");
+import assert from "node:assert/strict";
+import {readFile} from "node:fs/promises";
+import {CombatSystem} from "../src/combat.js";
+const c=new CombatSystem({range:3,damage:1,cooldown:.1,maxCombo:3});
+const actor={position:{distanceTo:()=>1}},enemy={visible:true,position:{},userData:{hp:10}};
+const a=c.attack(actor,[enemy]);assert.equal(a.combo,1);
+c.update(.2);const b=c.attack(actor,[enemy]);assert.equal(b.combo,2);
+assert.equal(c.dodge(),true);assert.equal(c.receiveHit(10).evaded,true);
+c.dodging=0;c.update(.2);c.setBlocking(true);
+assert.equal(c.receiveHit(10).blocked,true);
+assert.equal(c.attack(actor,[enemy]).reason,"blocking");
+const moving=new CombatSystem();moving.stamina=50;moving.update(1,true);assert.equal(moving.stamina,54,"Stamina should recover slowly while moving");
+const resting=new CombatSystem();resting.stamina=50;resting.update(1);assert.equal(resting.stamina,62,"Stamina should recover faster while resting");
+const main=await readFile(new URL("../src/main.js",import.meta.url),"utf8");
+assert.match(main,/stamina=combat\.stamina/,"The HUD stamina value must come from the combat resource pool");
+console.log("Advanced combat and shared stamina HUD tests passed.");
