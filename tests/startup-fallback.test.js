@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFile} from "node:fs/promises";
+const html=await readFile(new URL("../index.html",import.meta.url),"utf8");
+const css=await readFile(new URL("../style.css",import.meta.url),"utf8");
+assert.match(html,/import\("\.\/src\/main\.js"\)\.catch\(error=>/,"Module initialization failures must be caught");
+assert.match(html,/WORLD INITIALIZATION FAILED/,"The player must see a useful startup error");
+assert.match(html,/RELOAD GAME/,"The startup error must provide a recovery action");
+assert.match(html,/setAttribute\("aria-live","assertive"\)/,"Startup errors must be announced to assistive technology");
+assert.match(css,/#loading\.load-error/,"The recovery screen must have dedicated readable styling");
+console.log("Startup recovery screen tests passed.");
