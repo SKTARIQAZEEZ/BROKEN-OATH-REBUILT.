@@ -59,6 +59,7 @@ export function buildChapterEnvironment(scene,index){
  }
  const landmark=mesh(new THREE.BoxGeometry(5,3,1),material(accent),0,1.5,-19,group,"chapter-landmark");landmarks.push(landmark);
  const light=new THREE.PointLight(0xc99b67,kind==="interior"?12:18,38);light.position.set(0,8,0);group.add(light);
+ decorateEnvironment(group,kind,colliders);
  const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z])=>{
   const origin={x:THREE.MathUtils.clamp(x,-26.5,26.5),z:THREE.MathUtils.clamp(z,-26.5,26.5)};
   const clear=(px,pz)=>colliders.every(box=>Math.abs(px-box.x)>=box.halfX+.7||Math.abs(pz-box.z)>=box.halfZ+.7);
@@ -72,7 +73,6 @@ export function buildChapterEnvironment(scene,index){
   return new THREE.Vector3(best?.x??0,.12,best?.z??8);
  });
  const spawn=new THREE.Vector3(0,0,8);
- decorateEnvironment(group,kind,colliders);
  scene.add(group);
  return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},resolvePosition(position,radius=.42){const p=position.clone();p.x=THREE.MathUtils.clamp(p.x,-28+radius,28-radius);p.z=THREE.MathUtils.clamp(p.z,-28+radius,28-radius);for(const box of colliders){const minX=box.x-box.halfX-radius,maxX=box.x+box.halfX+radius,minZ=box.z-box.halfZ-radius,maxZ=box.z+box.halfZ+radius;if(p.x>minX&&p.x<maxX&&p.z>minZ&&p.z<maxZ){const dx=Math.min(Math.abs(p.x-minX),Math.abs(maxX-p.x)),dz=Math.min(Math.abs(p.z-minZ),Math.abs(maxZ-p.z));if(dx<dz)p.x=p.x<box.x?minX:maxX;else p.z=p.z<box.z?minZ:maxZ}}return p},dispose(){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>{m.map?.dispose();m.bumpMap?.dispose();m.dispose()});else{o.material.map?.dispose();o.material.bumpMap?.dispose();o.material.dispose()}}})}};
 }
