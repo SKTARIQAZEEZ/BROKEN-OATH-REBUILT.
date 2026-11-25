@@ -34,7 +34,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
 export class VehicleSystem{
  constructor({scene,onMessage=()=>{}}={}){this.scene=scene;this.onMessage=onMessage;this.vehicle=null;this.environment=null;this.collider=null;this.driving=false;this.speed=0;this.yaw=0;this.chapter=-1;}
  loadChapter(chapter,environment){
-  this.exit(false);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}
+  this.exit(false,this.playerRef);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}
   this.vehicle=null;this.environment=environment;this.chapter=chapter;this.collider=null;this.speed=0;
   if(!VEHICLE_CHAPTERS.has(chapter))return null;
   const car=makeVehicle(this.scene,VEHICLE_COLORS[chapter%VEHICLE_COLORS.length]);
@@ -51,9 +51,9 @@ export class VehicleSystem{
   if(!this.vehicle)return {ok:false,reason:"no-vehicle"};
   if(this.driving){this.exit(true,player);return {ok:true,driving:false}}
   if(player.position.distanceTo(this.vehicle.position)>4.2)return {ok:false,reason:"too-far"};
-  this.driving=true;this.speed=0;this.environment.colliders=this.environment.colliders.filter(c=>c!==this.collider);player.visible=false;this.onMessage("VEHICLE ENTERED · WASD TO DRIVE · V TO EXIT");return {ok:true,driving:true};
+  this.driving=true;this.playerRef=player;this.speed=0;this.environment.colliders=this.environment.colliders.filter(c=>c!==this.collider);player.visible=false;this.onMessage("VEHICLE ENTERED · WASD TO DRIVE · V TO EXIT");return {ok:true,driving:true};
  }
- exit(showMessage=true,player=null){
+ exit(showMessage=true,player=this.playerRef){
   if(!this.driving)return false;
   this.driving=false;this.speed=0;
   if(this.collider&&this.environment&&!this.environment.colliders.includes(this.collider))this.environment.colliders.push(this.collider);
@@ -63,7 +63,7 @@ export class VehicleSystem{
    for(const off of offsets){const p=this.vehicle.position.clone().add(off);const resolved=p.clone();for(const c of this.environment.colliders){const minX=c.x-c.halfX+.0,maxX=c.x+c.halfX+.0,minZ=c.z-c.halfZ+.0,maxZ=c.z+c.halfZ+.0;if(resolved.x>minX&&resolved.x<maxX&&resolved.z>minZ&&resolved.z<maxZ){resolved.x=this.vehicle.position.x+off.x;resolved.z=this.vehicle.position.z+off.z;}}
     if(this.environment.colliders.every(c=>Math.abs(resolved.x-c.x)>=c.halfX+.5||Math.abs(resolved.z-c.z)>=c.halfZ+.5)){found=resolved;break}
    }
-   player.position.copy(found||this.vehicle.position.clone().add(new THREE.Vector3(2.8,0,0)));player.visible=true;
+   player.position.copy(found||this.vehicle.position.clone().add(new THREE.Vector3(2.8,0,0)));player.visible=true;this.playerRef=null;
   }
   if(showMessage)this.onMessage("VEHICLE EXITED");return true;
  }
