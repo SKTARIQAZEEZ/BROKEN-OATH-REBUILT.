@@ -20,4 +20,6 @@ assert.equal(mobileSun.shadow.mapSize.width,1024,"Mobile should use a lighter sh
 const desktopScene=new THREE.Scene();buildWorld(desktopScene,{mobile:false});
 const desktopSun=desktopScene.children.find(o=>o.isDirectionalLight);
 assert.equal(desktopSun.shadow.mapSize.width,2048,"Desktop should retain higher shadow quality");
+const floorGrid=desktopScene.children.find(o=>o.isGridHelper);
+assert.equal(floorGrid.material.opacity,.12,"The floor grid should remain subtle rather than look like a debug overlay");
 console.log("Environment checks passed: 15 chapter spaces, furnished interiors and disposable collision geometry.");
