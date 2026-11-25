@@ -16,6 +16,11 @@ assert.ok(!environment.colliders.includes(vehicles.collider),"vehicle must not c
 vehicles.update(.5,{forward:true},player);
 assert.ok(vehicles.speed>0,"throttle must accelerate the vehicle");
 assert.ok(vehicles.position.z<vehicles.collider.z+2,"vehicle must move under throttle");
+const barrier={x:vehicles.position.x,z:vehicles.position.z-4.5,halfX:2,halfZ:.5,height:2};environment.colliders.push(barrier);
+const beforeImpact=vehicles.position.clone();vehicles.update(.5,{forward:true},player);
+assert.deepEqual(vehicles.position.toArray(),beforeImpact.toArray(),"vehicle must stop rather than pass through solid cover");
+vehicles.brake(.25);assert.ok(Math.abs(vehicles.speed)<.01,"handbrake must rapidly reduce speed");
+environment.colliders=environment.colliders.filter(c=>c!==barrier);
 assert.equal(vehicles.toggle(player).driving,false,"V toggles back to on-foot mode");
 assert.equal(player.visible,true,"player mesh returns after exiting");
 assert.ok(environment.colliders.includes(vehicles.collider),"parked vehicle collider is restored after exit");
