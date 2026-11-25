@@ -40,6 +40,12 @@ Story beats include directed camera shot types, dialogue captions, procedural fa
 - Guard vision/hearing/search/alarm, sound propagation, bottle distraction and squad role assignment.
 - Procedural ambience, footsteps and UI/impact tones.
 
+## Visual and runtime polish
+
+- Cinematic scene grade with restrained fog, softer shadow tuning, reduced harsh highlights and lightweight drifting dust particles around the player.
+- Responsive HUD refinement, clearer pause presentation, keyboard focus states, reduced-motion support and improved mobile touch feedback.
+- Audio mute now also prevents ambience from restarting; ambience nodes are disconnected when stopped. Pausing clears held movement/block inputs, and page exit releases visual, audio and vehicle resources.
+
 ## Verification and known production gaps
 
 `npm test` runs source checks, system tests, chapter progression simulation, cinematic coverage validation, environment construction/disposal checks and gameplay-system unit tests. `npm run test:e2e` runs Playwright desktop and mobile Chromium smoke tests against the production build, with external network requests blocked to verify offline bundling. GitHub Actions runs both suites before packaging.
