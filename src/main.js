@@ -24,7 +24,7 @@ import {NavigationGrid} from "./navigation.js";
 import {DistractionObject} from "./sound-propagation.js";
 import {createWeaponVisuals} from "./weapon-visuals.js";
 const $=s=>document.querySelector(s),mobileDevice=matchMedia("(max-width: 760px)").matches||navigator.maxTouchPoints>0,scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,260),renderer=new THREE.WebGLRenderer({antialias:!mobileDevice,powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(devicePixelRatio,mobileDevice?1.15:1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;$("#game").prepend(renderer.domElement);buildWorld(scene,{mobile:mobileDevice});
+renderer.setPixelRatio(Math.min(devicePixelRatio,mobileDevice?1.15:1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;$("#game").prepend(renderer.domElement);buildWorld(scene,{mobile:mobileDevice});
 let activeEnvironment=null,currentEnvironment=null,activeMissionObject=null,castActors=null,navigation=null;
 function loadChapterEnvironment(index){if(currentEnvironment)currentEnvironment.dispose();currentEnvironment=buildChapterEnvironment(scene,index);activeEnvironment=currentEnvironment.group;navigation=new NavigationGrid({bounds:currentEnvironment.walkableBounds,colliders:currentEnvironment.colliders,cellSize:2});if(castActors)applyChapterRoster(index,castActors);}
 loadChapterEnvironment(0);
