@@ -44,6 +44,25 @@ export function buildChapterEnvironment(scene,index){
   for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12)}
   if(kind==="interior"){for(let z=-15;z<=12;z+=5)for(let x of [-10,10])addCover(x,z,2,2.4,1,"archive-shelf")}
  }
+ if(["homes","safehouse","street"].includes(kind)){
+  // Recognizable residential facades: pitched roof silhouette, recessed entry, porch and ground-floor windows.
+  const houseXs=kind==="street"?[-18,0,18]:[-18,18];
+  for(let i=0;i<houseXs.length;i++){
+   const x=houseXs[i],z=kind==="street"?-9+(i%2)*18:kind==="homes"?-17: -17;
+   const w=7.4,d=6.2,h=5.8;
+   const facade=mesh(new THREE.BoxGeometry(w,h,d),createSurfaceMaterial("concrete",{color:i%2?0x4b4944:0x5a5147,seed:index*17+i}),x,h/2,z,group,"residential-house");
+   colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});
+   const roof=new THREE.Mesh(new THREE.ConeGeometry(w*.72,2.25,4),material(i%2?0x282b2d:0x39312d));roof.position.set(x,h+1.05,z);roof.rotation.y=Math.PI/4;roof.castShadow=true;roof.receiveShadow=true;roof.name="pitched-house-roof";group.add(roof);
+   const door=new THREE.Mesh(new THREE.BoxGeometry(1.05,2.25,.12),material(0x34271f));door.position.set(x,.0+1.125,z+d/2+.07);door.castShadow=true;door.name="house-front-door";group.add(door);
+   for(const wx of [-2.25,2.25]){
+    const win=new THREE.Mesh(new THREE.BoxGeometry(1.25,1.15,.08),windowMat);win.position.set(x+wx,2.65,z+d/2+.08);win.name="house-front-window";group.add(win);
+    const sill=new THREE.Mesh(new THREE.BoxGeometry(1.45,.1,.18),trim);sill.position.set(x+wx,2.02,z+d/2+.08);group.add(sill);
+   }
+   const porch=new THREE.Mesh(new THREE.BoxGeometry(3.2,.18,1.35),material(0x4a4239));porch.position.set(x,.18,z+d/2+.68);porch.name="house-porch";porch.castShadow=true;group.add(porch);
+   for(const px of [-1.35,1.35]){const column=new THREE.Mesh(new THREE.BoxGeometry(.14,2.4,.14),trim);column.position.set(x+px,1.3,z+d/2+1.15);column.name="porch-column";group.add(column);colliders.push({x:x+px,z:z+d/2+1.15,halfX:.1,halfZ:.1,height:2.4})}
+   const step=new THREE.Mesh(new THREE.BoxGeometry(1.8,.22,.55),material(0x4a4945));step.position.set(x,.11,z+d/2+1.5);step.name="house-entry-step";group.add(step);
+  }
+ }
  // Reusable authored interior rooms add navigable, furnished spaces to the blockout.
  if(["warehouse","interior","fortress","compound","safehouse","homes"].includes(kind)){
   const ix=17,iz=8,iw=10,id=8,wall=.35,roomMat=material(kind==="warehouse"||kind==="fortress"?0x34383a:0x49433c),floorMat=material(0x292d30);
