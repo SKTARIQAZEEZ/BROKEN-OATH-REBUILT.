@@ -5,6 +5,8 @@ for(const [key,preset] of Object.entries(CHARACTER_PRESETS)){
  assert.equal(character.name,preset.name);
  assert.equal(character.userData.limbs.legs.length,2);
  assert.equal(character.userData.limbs.arms.length,2);
+ assert.ok(character.children.some(o=>o.name==="chest-panel"||o.name==="shawl-fold"),"named character must receive detailed clothing geometry");
+ assert.ok(character.userData.detailMaterials.length>=8);
  assert.equal(typeof character.userData.setAnimation,"function");
  assert.equal(typeof character.userData.setExpression,"function");
  assert.equal(typeof character.userData.setTalking,"function");
