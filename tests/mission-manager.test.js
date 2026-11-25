@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import {MissionManager} from "../src/mission-manager.js";
+const campaign=[{id:"a",objectives:[{type:"reach",target:"gate"},{type:"collect",target:"key"}]},{id:"b",objectives:[{type:"defeat",target:"boss"}]}];
+const m=new MissionManager(campaign);
+assert.equal(m.completeObjective({zone:"wrong"}),false);
+assert.equal(m.completeObjective({zone:"gate"}),true);
+m.setCheckpoint({spawn:"safe"});
+assert.equal(m.completeObjective({item:"wrong"}),false);
+m.collectEvidence("photo");
+const saved=m.snapshot(),restored=new MissionManager(campaign);
+assert.equal(restored.restore(saved),true);
+assert.equal(restored.evidence[0],"photo");
+assert.equal(restored.completeObjective({item:"key"}),true);
+assert.equal(restored.chapter,1);
+assert.equal(restored.unlocked.has(1),true);
+assert.equal(restored.completeObjective({target:"boss"}),true);
+assert.equal(restored.status,"complete");
+console.log("Mission manager tests passed.");
