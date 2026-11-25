@@ -20,7 +20,7 @@ Serve this directory over HTTP (ES modules require a local server), then open `h
 - **T:** throw a sound distraction
 - **C:** crouch
 - **Escape:** pause
-- Touch movement/action controls are provided for mobile browsers.
+- Touch controls include movement, interaction, attack, block, dodge, counter, distraction and weapon switching.
 
 ## Campaign
 
