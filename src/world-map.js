@@ -1,54 +1,28 @@
-const style=document.createElement("style");style.textContent=`
-#mapButton{position:absolute;right:74px;top:15px;pointer-events:auto;background:rgba(11,18,27,.86);border:1px solid rgba(201,155,94,.65);color:#e8d7bd;font-size:10px;letter-spacing:2px;z-index:5}
-.world-map{position:absolute;z-index:15;inset:0;background:rgba(2,5,8,.94);display:grid;place-items:center;padding:18px;backdrop-filter:blur(12px)}.world-map.hide{display:none!important}.world-map-panel{width:min(1120px,100%);max-height:94%;overflow:auto;background:linear-gradient(145deg,#121d24,#080e13);border:1px solid rgba(201,155,94,.55);box-shadow:0 24px 90px #000c;padding:clamp(14px,3vw,28px)}
-.world-map-head{display:flex;justify-content:space-between;align-items:center;gap:18px}.world-map-head small{color:#c99b5e;letter-spacing:2px;font-size:9px}.world-map-head h2{font-size:clamp(20px,3vw,30px);letter-spacing:4px;margin:8px 0}.world-map-head p{color:#aeb8c1;font-size:12px;margin:0 0 12px}.world-map-panel svg{display:block;width:100%;height:auto;max-height:68vh;background:#101a20;border:1px solid #34434b}.map-node{cursor:pointer;outline:none}.map-node-halo{fill:#c99b5e;opacity:.12}.map-node-dot{fill:#c99b5e;stroke:#f1d5a9;stroke-width:.35}.map-node-num{font-size:1.35px;fill:#10151a;font-weight:900;pointer-events:none}.map-node-label{font-size:1.8px;fill:#e5e9e8;paint-order:stroke;stroke:#111a20;stroke-width:.55px;stroke-linejoin:round}.map-node.current .map-node-halo{opacity:.55;fill:#f0c27e}.map-node.current .map-node-dot{fill:#fff0cf;stroke:#c99b5e;stroke-width:.6}.map-node:focus .map-node-dot{stroke:#fff;stroke-width:.8}.world-map-foot{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;padding-top:14px;color:#aeb8c1;font-size:9px;letter-spacing:1.3px}.world-map-foot span:first-child{color:#e3bd83}
-@media(max-width:600px){#mapButton{right:64px;top:15px;padding:9px 10px}.world-map{padding:6px}.world-map-panel{padding:10px}.world-map-head{align-items:flex-start}.world-map-head button{padding:8px;font-size:9px}.world-map-panel svg{max-height:none}.map-node-label{font-size:2px}.world-map-foot{font-size:8px;gap:8px}}
-`;document.head.append(style);
-
-const NODES=[
- ["01","The Days Before","Childhood neighbourhood","homes",8,10],
- ["02","Love and Friendship","School & football ground","sports",23,7],
- ["03","The Promise","Rooftop & departure","rooftop",38,10],
- ["04","Beyond the Lines","Operation perimeter","industrial",54,8],
- ["05","The Night of Fire","Burned family home","ruins",70,10],
- ["06","The Lie","Devraj compound","compound",84,15],
- ["07","A City of Shadows","Controlled city","street",70,27],
- ["08","The Investigation","Evidence district","investigation",53,31],
- ["09","The Truth","Memory arena","arena",36,29],
- ["10","The Reunion","Warehouse prison","warehouse",19,33],
- ["11","The Broken Brotherhood","Broken brotherhood","arena",8,49],
- ["12","The Revelation","Records archive","interior",24,57],
- ["13","Together Again","Safehouse district","safehouse",43,55],
- ["14","The Final Battle","Devraj headquarters","fortress",65,57],
- ["15","The Promise Fulfilled","Wedding courtyard","ceremony",84,49]
-];
-const ns="http://www.w3.org/2000/svg";
-const el=(tag,attrs={},text="")=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(text)n.textContent=text;return n};
-export function createWorldMap({getChapter=()=>0,onClose=()=>{}}={}){
- const overlay=document.createElement("section");overlay.id="worldMap";overlay.className="world-map hide";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Campaign world map");
+import {CAMPAIGN} from "./campaign.js";
+const css=document.createElement("style");css.textContent=`
+#mapButton{position:absolute;right:74px;top:15px;z-index:5;background:#101a22;border:1px solid #c99b5e;color:#f0dfc5;font-size:10px;letter-spacing:2px}
+.world-map{position:absolute;z-index:15;inset:0;background:#020508f5;display:grid;place-items:center;padding:10px}.world-map.hide{display:none!important}.world-map-panel{width:min(1280px,100%);height:94vh;overflow:auto;background:#101a22;border:1px solid #8c704c;padding:16px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px}.world-map-head{display:flex;justify-content:space-between;align-items:center}.world-map-head small{color:#c99b5e;letter-spacing:2px}.world-map-head h2{margin:5px 0;font-size:24px;letter-spacing:3px}.world-map-head p{margin:0;color:#aeb8c1;font-size:11px}.map-layout{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:10px;min-height:0}.map-canvas{background:#17252b;border:1px solid #34434b;min-height:360px}.map-canvas svg{width:100%;height:100%;display:block;min-height:360px}.map-side{background:#091219;border:1px solid #293943;padding:12px;overflow:auto}.map-side h3{font-size:11px;letter-spacing:1px;color:#d9b47d}.map-side p,.map-side li{font-size:10px;line-height:1.5;color:#c5cdd1}.map-side li{margin-bottom:6px}.map-side li.done{text-decoration:line-through;color:#7eaa91}.map-pin{cursor:pointer}.map-pin .halo{fill:#d2a15f;opacity:.16}.map-pin .dot{fill:#d2a15f;stroke:#f5ddb4;stroke-width:.5}.map-pin .num{fill:#111820;font-size:1.3px;font-weight:bold}.map-pin .label{fill:#f1eee7;font-size:1.8px;paint-order:stroke;stroke:#0a1116;stroke-width:.55px}.map-pin.current .halo{opacity:.7;fill:#fff0c8}.map-pin.current .dot{fill:#fff0c8;stroke:#c99b5e;stroke-width:.8}.map-legend,.map-foot{display:flex;gap:12px;flex-wrap:wrap;color:#c99b5e;font-size:9px;letter-spacing:.5px}.map-foot{justify-content:space-between}
+@media(max-width:760px){.world-map{padding:3px}.world-map-panel{height:98vh;padding:7px}.map-layout{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 150px}.map-side ol{columns:2}.map-canvas svg{min-height:290px}.world-map-head h2{font-size:16px}}
+`;document.head.append(css);
+const LOC=[["Childhood Homes",9,17],["School & Football Ground",23,25],["Rooftop",34,17],["Operation Perimeter",54,10],["Burned Family Home",65,26],["Devraj Compound",83,18],["Controlled City",56,42],["Evidence District",43,51],["Memory Arena",26,43],["Warehouse Prison",17,59],["Brotherhood Arena",8,43],["Records Archive",34,69],["Safehouse District",51,68],["Devraj Headquarters",80,58],["Wedding Courtyard",67,79]];
+const NS="http://www.w3.org/2000/svg",el=(tag,a={},t)=>{const n=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(a))n.setAttribute(k,v);if(t)n.textContent=t;return n};
+export function createWorldMap({getChapter=()=>0,getObjective=()=>0,onClose=()=>{}}={}){
+ const overlay=document.createElement("section");overlay.id="worldMap";overlay.className="world-map hide";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");
  const panel=document.createElement("div");panel.className="world-map-panel";overlay.append(panel);
- const head=document.createElement("header");head.className="world-map-head";head.innerHTML='<div><small> BROKEN OATH / CAMPAIGN ATLAS </small><h2>THE WORLD MAP</h2><p>Follow the story route across all 15 chapters</p></div><button type="button" aria-label="Close map">CLOSE ✕</button>';panel.append(head);head.querySelector("button").addEventListener("click",()=>{overlay.classList.add("hide");onClose()});
- const svg=el("svg",{viewBox:"0 0 100 68",role:"img","aria-label":"Schematic campaign route map"});
- svg.append(el("defs"));
- const coast=el("path",{d:"M2 17 Q13 4 29 12 T58 8 T96 17 L96 62 Q80 67 66 63 T37 65 T3 54 Z",fill:"#19252a",stroke:"#52616a","stroke-width":".45"});
- svg.append(coast);
- for(let i=0;i<7;i++)svg.append(el("path",{d:`M${4+i*14} 4 Q${10+i*13} 25 ${4+i*14} 66`,stroke:"#29383d","stroke-width":".28",fill:"none"}));
- for(let i=0;i<6;i++)svg.append(el("path",{d:`M3 ${13+i*9} Q48 ${8+i*10} 97 ${13+i*9}`,stroke:"#29383d","stroke-width":".28",fill:"none"}));
- const pts=NODES.map(n=>n[4]+","+n[5]).join(" ");
- svg.append(el("polyline",{points:pts,fill:"none",stroke:"#c99b5e","stroke-width":".65","stroke-dasharray":"1.4 1.05","stroke-linecap":"round","stroke-linejoin":"round"}));
- const labels=el("g",{class:"map-nodes"});
- NODES.forEach((n,i)=>{
-  const [num,title,place,type,x,y]=n,group=el("g",{class:"map-node","data-chapter":i,tabindex:"0",role:"button","aria-label":`Chapter ${num}: ${title}, ${place}`});
-  group.append(el("circle",{cx:x,cy:y,r:"2.25",class:"map-node-halo"}),el("circle",{cx:x,cy:y,r:"1.55",class:"map-node-dot"}),el("text",{x:x,y:y+.55,"text-anchor":"middle",class:"map-node-num"},num));
-  const tx=x>75?x-2.6:x+2.6,anchor=x>75?"end":"start";
-  group.append(el("text",{x:tx,y:y-1.6,"text-anchor":anchor,class:"map-node-label"},title));
-  group.addEventListener("click",()=>select(i));group.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}});
-  labels.append(group);
- });svg.append(labels);panel.append(svg);
- const foot=document.createElement("footer");foot.className="world-map-foot";foot.innerHTML='<span>● CURRENT CHAPTER</span><span>— STORY ROUTE</span><span>15 LOCATIONS · CHRONOLOGICAL CAMPAIGN</span>';panel.append(foot);
- function select(index){const nodes=labels.querySelectorAll(".map-node");nodes.forEach((node,i)=>node.classList.toggle("current",i===index));const n=NODES[index];foot.querySelector("span:last-child").textContent="CHAPTER "+n[0]+" · "+n[2].toUpperCase()}
- function open(){overlay.classList.remove("hide");select(Math.max(0,Math.min(14,getChapter())));head.querySelector("button").focus()}
- function close(){overlay.classList.add("hide");onClose()}
- document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.classList.contains("hide"))close()});
- return {element:overlay,open,close,select};
+ const head=document.createElement("header");head.className="world-map-head";head.innerHTML='<div><small>BROKEN OATH / OPEN WORLD ATLAS</small><h2>THE CITY & OUTLANDS</h2><p>15 campaign districts · connected roads · mission objectives</p></div><button type="button">CLOSE ✕</button>';panel.append(head);
+ const layout=document.createElement("div");layout.className="map-layout";panel.append(layout);const canvas=document.createElement("div");canvas.className="map-canvas";layout.append(canvas);const side=document.createElement("aside");side.className="map-side";layout.append(side);
+ const svg=el("svg",{viewBox:"0 0 100 88",role:"img","aria-label":"Top down open world map with roads and fifteen mission districts"});
+ svg.append(el("path",{d:"M0 10 Q15 2 30 10 T60 7 T100 10 V88 H0Z",fill:"#293b31",stroke:"#6d7960","stroke-width":".6"}),el("path",{d:"M0 0 H100 V9 Q75 14 55 10 T0 11Z",fill:"#102b39"}),el("path",{d:"M100 24 Q82 28 75 39 T62 54 Q51 59 58 72 T44 88 H100Z",fill:"#123244",stroke:"#2a6575","stroke-width":".5"}),el("path",{d:"M4 14 Q13 23 18 33 T29 47 Q36 54 32 66",fill:"none",stroke:"#24586a","stroke-width":"2"}));
+ for(let i=0;i<18;i++)svg.append(el("circle",{cx:3+i*7%26,cy:13+i*11%13,r:"1.1",fill:"#526d48"}));
+ const roads=["M4 34 Q22 29 36 35 T67 35 Q82 32 94 25","M8 61 Q24 54 37 57 T66 57 Q82 53 92 45","M12 17 Q22 26 34 34 T51 48 Q65 58 82 75","M29 10 Q37 22 43 35 T53 55 Q59 70 67 82","M5 45 Q20 43 34 45 T61 44 Q78 43 91 36","M18 76 Q31 68 44 68 T71 70 Q84 71 96 64"];
+ for(const d of roads){svg.append(el("path",{d,fill:"none",stroke:"#151d20","stroke-width":"2.8"}));svg.append(el("path",{d,fill:"none",stroke:"#b7aa91","stroke-width":".22","stroke-dasharray":"1 1"}))}
+ for(let y=30;y<55;y+=5)for(let x=35;x<62;x+=5)svg.append(el("rect",{x,y,width:3.3,height:2.7,fill:"#59615b",stroke:"#899087","stroke-width":".18"}));
+ svg.append(el("rect",{x:78,y:69,width:17,height:13,fill:"#38434a",stroke:"#88949a","stroke-width":".35"}),el("rect",{x:18,y:21,width:10,height:6,fill:"#466a48",stroke:"#d8d2bb","stroke-width":".35"}));
+ for(const [t,x,y] of [["HILLS / QUARRY",13,8],["RURAL HOMES",12,31],["SCHOOL DISTRICT",23,19],["OLD TOWN",38,25],["CITY CENTRE",49,39],["INDUSTRIAL ZONE",80,49],["WAREHOUSE QUARTER",17,70],["PORT & DOCKS",86,85],["SAFEHOUSE SUBURBS",50,78]])svg.append(el("text",{x,y,fill:"#d3d8d2","font-size":"1.8","text-anchor":"middle"},t));
+ const pins=el("g");svg.append(pins);canvas.append(svg);const legend=document.createElement("div");legend.className="map-legend";legend.textContent="━ MAIN ROAD   ≋ RIVER / COAST   ● MISSION LOCATION   ◉ CURRENT CHAPTER";canvas.append(legend);
+ const foot=document.createElement("footer");foot.className="map-foot";foot.innerHTML="<span>CAMPAIGN CANON · 15 CHAPTERS</span><span>NORTH ↑</span>";panel.append(foot);
+ function select(i){pins.querySelectorAll(".map-pin").forEach((p,j)=>p.classList.toggle("current",i===j));const m=CAMPAIGN[i];side.replaceChildren();const h=document.createElement("h3");h.textContent="CHAPTER "+String(i+1).padStart(2,"0")+" · "+m.title.toUpperCase();side.append(h);const p=document.createElement("p");p.textContent=LOC[i][0]+". "+m.story;side.append(p);const sh=document.createElement("h3");sh.textContent="MISSION OBJECTIVES";side.append(sh);const ol=document.createElement("ol");m.objectives.forEach((o,j)=>{const li=document.createElement("li");li.textContent=o.label;if(i<getChapter()||(i===getChapter()&&j<getObjective()))li.className="done";else if(i===getChapter()&&j===getObjective())li.style.color="#f0c27e";ol.append(li)});side.append(ol)}
+ LOC.forEach((loc,i)=>{const [name,x,y]=loc,g=el("g",{class:"map-pin",tabindex:"0",role:"button","aria-label":"Chapter "+(i+1)+": "+CAMPAIGN[i].title+" at "+name});g.append(el("circle",{cx:x,cy:y,r:"3.1",class:"halo"}),el("circle",{cx:x,cy:y,r:"1.8",class:"dot"}),el("text",{x,y:y+.48,"text-anchor":"middle",class:"num"},String(i+1)),el("text",{x:x>74?x-2.5:x+2.5,y:y-2.4,"text-anchor":x>74?"end":"start",class:"label"},name));g.addEventListener("click",()=>select(i));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(i)}});pins.append(g)});
+ function close(){overlay.classList.add("hide");onClose()}head.querySelector("button").addEventListener("click",close);overlay.addEventListener("click",e=>{if(e.target===overlay)close()});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.classList.contains("hide"))close()});
+ function open(){overlay.classList.remove("hide");select(Math.max(0,Math.min(14,getChapter())));head.querySelector("button").focus()}return {element:overlay,open,close,select};
 }
