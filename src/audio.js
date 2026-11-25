@@ -6,6 +6,7 @@ export class AudioDirector {
  setEnabled(value){this.enabled=!!value;if(this.master)this.master.gain.value=this.enabled?.18:0;if(!this.enabled){this.stopScore();this.stopAmbience()}return this.enabled}
  playUI(){this.tone({frequency:520,duration:.06,type:"triangle",gain:.035})}
  playHit(){this.tone({frequency:95,duration:.1,type:"sawtooth",gain:.055});this.tone({frequency:58,duration:.12,type:"triangle",gain:.025,delay:.025})}
+ playGunshot(weapon="pistol"){const base=weapon==="shotgun"?72:weapon==="rifle"?118:145;this.tone({frequency:base,duration:weapon==="shotgun"?.22:.12,type:"sawtooth",gain:weapon==="shotgun"?.13:.085});this.tone({frequency:base*2.2,duration:.045,type:"triangle",gain:.035,delay:.012})}
  playFootstep(){this.tone({frequency:68+Math.random()*20,duration:.055,type:"triangle",gain:.018})}
  playObjectiveComplete(){this.tone({frequency:440,duration:.13,type:"triangle",gain:.035});this.tone({frequency:660,duration:.18,type:"sine",gain:.03,delay:.11})}
  playFailure(){this.tone({frequency:190,duration:.22,type:"sawtooth",gain:.04});this.tone({frequency:130,duration:.3,type:"triangle",gain:.035,delay:.13})}
