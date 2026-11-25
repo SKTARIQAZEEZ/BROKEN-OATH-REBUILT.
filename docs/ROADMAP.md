@@ -1,53 +1,50 @@
-# BROKEN OATH rebuild roadmap
+# BROKEN OATH — Production acceptance
 
-## Active production status
+## Implemented in the repository
 
-### 1. Missions, triggers and playtesting
-- [x] 15 canon-ordered chapters with typed objectives
-- [x] Mission state, checkpoints, retry, save/restore and evidence flags
-- [x] Proximity auto-trigger for reach objectives
-- [x] Reusable trigger conditions, deadlines, damage limits and failure callbacks
-- [ ] Define and wire authored trigger volumes and failure rules for every individual objective
-- [ ] Complete automated chapter simulation and full browser playthrough of all 15 chapters
+### Missions
+- [x] 15 canon-ordered chapters and typed objectives
+- [x] Checkpoints, retry, save/restore, evidence and chapter unlocks
+- [x] Objective-scoped trigger registration, stealth-compromise failure, optional authored deadlines and damage limits
+- [x] Automated campaign progression simulation across every objective type
 
-### 2. Environments and navigation
-- [x] Fifteen distinct dark procedural environment blockouts
-- [x] Registered collision blockers, player collision resolution and cover line-of-sight checks
-- [ ] Detailed building exteriors, interiors, bespoke props, destructible set dressing and traversal routes
-- [ ] Navigation mesh/pathfinding for guards and full collision edge-case tests
-- [ ] Visual acceptance review for every chapter
+### Environments and navigation
+- [x] 15 distinct dark procedural chapter blockouts
+- [x] Collision blockers, line-of-sight obstruction and player collision resolution
+- [x] Furnished interior room kits in warehouse, archive, fortress, compound and safehouse-style locations
+- [x] Grid-based A* navigation used by guards during search/investigation
+- [x] Environment construction, collision-data and disposal tests
 
-### 3. Characters and animation
-- [x] Five named procedural character placeholders and role variants
-- [x] Basic procedural idle, walk, guard, attack and hit poses
-- [ ] Production-quality approved 3D models, topology, UVs, materials and clothing
-- [ ] Rigging, facial blendshapes, facial animation, mocap/author-authored clips and lip-sync
+### Characters and cinematics
+- [x] Five named procedural character meshes and basic body animation
+- [x] Procedural facial expressions and dialogue-driven mouth motion hooks
+- [x] Authored dialogue beats and directed shot types for all 15 chapters
+- [x] Cinematic camera staging and sequence lifecycle callbacks
+- [ ] Production-quality realistic character models, topology, UVs, materials and clothing
+- [ ] Full facial rigs, recorded voice, phoneme-aligned lip-sync and authored/mocap animation clips
+- [ ] Browser review of every camera shot, actor position, continuity and subtitle timing
 
-### 4. Combat and enemy AI
-- [x] Melee attacks, combo scaling, stamina, block and dodge state logic
-- [x] Guard vision, cover-aware sight, investigate and timed search states
-- [x] Alarm escalation state and last-known-player-position memory
-- [ ] Integrate all combat states with authored player/enemy animation and readable hit reactions
-- [ ] Weapon classes, counters, finishers, boss phases, enemy squad tactics and balancing
-- [ ] Sound propagation, distraction objects, takedowns and alarm response behavior
+### Combat and AI
+- [x] Weapon profiles: unarmed, baton, knife and heavy melee
+- [x] Combo/stamina, block, dodge, timed counter, stagger and finisher logic
+- [x] Multi-phase Devraj boss controller and final battle sequence
+- [x] Guard vision, sound-based investigation, search, alarm and A* movement
+- [x] Squad role assignments, sound propagation and player-triggered bottle distraction
+- [ ] Animation-authored hit reactions, weapon-specific clips, polished boss telegraphs and combat balancing
+- [ ] Full squad coordination with path-aware flanking, cover selection, takedown animations and group alarm response
 
-### 5. Campaign and cinematics
-- [x] Canon-ordered 15-chapter objective data
-- [x] Initial authored dialogue beats for childhood, promise, betrayal, reunion, truth and finale
-- [ ] Fully authored mission-by-mission dialogue, branching story state and continuity validation
-- [ ] Directed in-engine camera work, staging, flashback gameplay sequences and complete cutscenes
-- [ ] Fully playable final battle, family rescue, Ranvir redemption and wedding epilogue
+### Audio
+- [x] Procedural ambience, footsteps, UI and impact tones
+- [ ] Original composed score, recorded dialogue performances, final SFX library, mixing and mastering
 
-### 6. Audio
-- [x] Procedural UI and impact tones
-- [x] Procedural ambience and footstep sound hooks
-- [ ] Professionally produced/original score, location-specific ambience and complete SFX library
-- [ ] Recorded voice performances, editing, mixing, subtitles and lip-sync integration
+## Remaining production and verification gates
 
-### 7. Release and acceptance
-- [ ] Passing CI for all source checks and gameplay tests
-- [ ] Browser QA of all chapters, save/load, controls, combat, stealth and failure/retry
-- [ ] PC and physical mobile performance/accessibility acceptance
-- [ ] Package all licensed/created assets and verify final `BROKEN_OATH_COMPLETE_GAME.zip`
+- [ ] Replace procedural character placeholders with licensed/created production models and rigs
+- [ ] Replace blockout geometry with detailed bespoke environments, interiors, props and final materials
+- [ ] Complete animation, recorded voice and audio asset integration
+- [ ] Full interactive browser playthrough of all 15 chapters, including every failure/retry path and save/load transition
+- [ ] Manual visual QA of lighting, collision, navigation, combat, cutscenes and accessibility
+- [ ] PC and physical mobile performance testing
+- [ ] Final packaging and verify `BROKEN_OATH_COMPLETE_GAME.zip`
 
-**Release gate:** Procedural systems, placeholder geometry, synthesized test tones and text captions are not substitutes for realistic art, rigged animation, recorded dialogue or full chapter playtesting. The project is not complete until every unchecked acceptance item is implemented and verified.
+**Release rule:** Unit tests and automated campaign simulation are not a substitute for interactive playtesting or production art/audio. The game is not release-complete while any production or manual QA gate remains unchecked.
