@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import {chapterRoster,applyChapterRoster} from "../src/chapter-roster.js";
 assert.equal(Object.keys(chapterRoster(0)).sort().join(","),"ananya,anjali,ranvir");
+assert.equal(chapterRoster(7).ananya,undefined,"Ananya must remain hidden during the investigation");
+assert.equal(chapterRoster(8).ananya,undefined,"Ananya must remain hidden during the truth chapter");
 assert.equal(chapterRoster(9).ananya,undefined,"Ananya must remain hidden until rescued");
 assert.equal(chapterRoster(9).anjali,undefined,"Anjali must remain hidden until rescued");
+assert.ok(chapterRoster(10).ananya&&chapterRoster(10).anjali,"Both rescued family members must return after Chapter 10");
+assert.ok(chapterRoster(11).ananya&&chapterRoster(11).anjali,"Both family members must remain present during the revelation");
 assert.ok(chapterRoster(13).devraj);
 const makeActor=()=>({visible:false,position:{set(...p){this.value=p}}});
 const actors={ranvir:makeActor(),ananya:makeActor(),anjali:makeActor(),devraj:makeActor()};
