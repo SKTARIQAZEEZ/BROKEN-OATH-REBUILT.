@@ -3,6 +3,7 @@ import {CAMPAIGN} from "./campaign.js";
 import {buildWorld} from "./world.js";
 import {buildChapterEnvironment} from "./environments.js";
 import {createCharacter,CHARACTER_PRESETS} from "./characters.js";
+import {attachCharacterAsset} from "./character-assets.js";
 import {MissionManager} from "./mission-manager.js";
 import {CombatSystem} from "./combat.js";
 import {StealthSystem} from "./stealth.js";
@@ -36,6 +37,13 @@ const ranvir=createCharacter(CHARACTER_PRESETS.ranvir);ranvir.position.set(4,0,-
 const ananya=createCharacter(CHARACTER_PRESETS.ananya);ananya.position.set(-4,0,-4);scene.add(ananya);
 const anjali=createCharacter(CHARACTER_PRESETS.anjali);anjali.position.set(-3,0,-8);anjali.visible=false;scene.add(anjali);
 const devraj=createCharacter({...CHARACTER_PRESETS.devraj,scale:1.1});devraj.position.set(0,0,-30);devraj.visible=false;scene.add(devraj);
+// Load the authored PowerShell-exported GLBs over the temporary procedural stand-ins.
+// Failed/missing files keep the fallback model visible rather than breaking the campaign.
+attachCharacterAsset(player,"/assets/characters/Azeez.glb",{targetHeight:1.78});
+attachCharacterAsset(ranvir,"/assets/characters/Ranvir.glb",{targetHeight:1.86});
+attachCharacterAsset(ananya,"/assets/characters/Ananya.glb",{targetHeight:1.60});
+attachCharacterAsset(anjali,"/assets/characters/Anjali.glb",{targetHeight:1.62});
+attachCharacterAsset(devraj,"/assets/characters/Devraj.glb",{targetHeight:1.82});
 castActors={ranvir,ananya,anjali,devraj};applyChapterRoster(0,castActors);
 const enemies=[];for(let i=0;i<8;i++){const e=createCharacter({name:"Gang Enforcer",shirt:0x3c3432,scale:.95,role:"gang"});e.position.set(-12+(i%4)*8,0,-18-Math.floor(i/4)*8);e.userData.hp=3;e.visible=false;scene.add(e);enemies.push(e)}
 const ring=new THREE.Mesh(new THREE.TorusGeometry(1.05,.05,8,32),new THREE.MeshBasicMaterial({color:0xd3a363}));ring.rotation.x=Math.PI/2;scene.add(ring);
