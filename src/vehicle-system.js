@@ -34,7 +34,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
 export class VehicleSystem{
  constructor({scene,onMessage=()=>{}}={}){this.scene=scene;this.onMessage=onMessage;this.vehicle=null;this.environment=null;this.collider=null;this.driving=false;this.speed=0;this.yaw=0;this.chapter=-1;}
  loadChapter(chapter,environment){
-  this.exit(false,this.playerRef);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}
+  const oldEnvironment=this.environment,oldCollider=this.collider;this.exit(false,this.playerRef);if(oldEnvironment&&oldCollider)oldEnvironment.colliders=oldEnvironment.colliders.filter(c=>c!==oldCollider);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}
   this.vehicle=null;this.environment=environment;this.chapter=chapter;this.collider=null;this.speed=0;
   if(!VEHICLE_CHAPTERS.has(chapter))return null;
   const car=makeVehicle(this.scene,VEHICLE_COLORS[chapter%VEHICLE_COLORS.length]);
@@ -67,10 +67,12 @@ export class VehicleSystem{
   }
   if(showMessage)this.onMessage("VEHICLE EXITED");return true;
  }
+ brake(strength=.25){if(this.driving)this.speed*=Math.pow(.012,Math.max(.05,strength));}
  update(dt,input={},player=null){
   if(!this.driving||!this.vehicle)return;
+  if(input.brake)this.brake(dt);
   const throttle=(input.forward?1:0)-(input.backward?1:0),steer=(input.right?1:0)-(input.left?1:0);
-  if(throttle)this.speed+=throttle*(throttle>0?13:9)*dt;else this.speed*=Math.pow(.18,dt);
+  if(throttle&&!input.brake)this.speed+=throttle*(throttle>0?13:9)*dt;else if(!input.brake)this.speed*=Math.pow(.18,dt);
   this.speed=THREE.MathUtils.clamp(this.speed,-7,17);
   if(Math.abs(this.speed)<.08)this.speed=0;
   const steerScale=Math.min(1,Math.abs(this.speed)/3);
