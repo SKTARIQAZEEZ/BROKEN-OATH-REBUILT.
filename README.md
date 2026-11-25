@@ -9,7 +9,7 @@ Serve this directory over HTTP (ES modules require a local server), then open `h
 ## Controls
 
 - **WASD / arrow keys:** move
-- **Mouse drag:** orbit camera
+- **Mouse drag / touch drag on the world:** orbit camera
 - **E:** interact with mission objects and nearby characters
 - **Space:** melee attack
 - **1–4:** equip unarmed, baton, knife or heavy melee profile
@@ -20,7 +20,8 @@ Serve this directory over HTTP (ES modules require a local server), then open `h
 - **T:** throw a sound distraction
 - **C:** crouch
 - **Escape:** pause
-- Touch controls include movement, interaction, attack, block, dodge, counter, distraction and weapon switching.
+- Touch controls include movement, interaction, attack, block, dodge, counter, distraction and weapon switching. Mobile rendering uses a reduced pixel ratio and shadow map to lower GPU cost.
+- Save data is versioned and legacy schema 1 saves migrate to schema 2 when loaded.
 
 ## Campaign
 
