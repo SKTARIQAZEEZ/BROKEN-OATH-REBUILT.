@@ -8,6 +8,11 @@ const vehicles=new VehicleSystem({scene,onMessage:m=>messages.push(m)});
 assert.equal(vehicles.loadChapter(1,environment),null,"school chapter intentionally has no drivable car");
 assert.ok(vehicles.loadChapter(3,environment),"operation chapter should receive a drivable vehicle");
 assert.ok(vehicles.collider,"parked vehicle must register a physical collider");
+const vehicleParts=vehicles.vehicle.children.map(part=>part.name);
+for(const part of ["front-grille","front-windshield","rear-windshield","side-mirror","door-handle","wheel-arch-trim","brake-disc","front-bumper","rear-bumper","roof-rail","exhaust-tip"]){
+ assert.ok(vehicleParts.includes(part),"vehicle exterior should include "+part);
+}
+assert.equal(vehicles.vehicle.userData.wheels.length,4,"all four wheels must remain independently animated");
 assert.ok(environment.colliders.includes(vehicles.collider),"parked vehicle must block on-foot movement");
 const player=new THREE.Group();player.position.copy(vehicles.position).add(new THREE.Vector3(0,0,3));scene.add(player);
 assert.deepEqual(vehicles.toggle(player),{ok:true,driving:true});
