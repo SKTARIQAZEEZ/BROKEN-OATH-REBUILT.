@@ -9,7 +9,7 @@ const OBJECTIVE_ANCHORS=[
  [[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]
 ];
 function mesh(geo,mat,x,y,z,group,name){const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;if(name)o.name=name;group.add(o);return o}
-function addLamp(group,x,z){const pole=mesh(new THREE.CylinderGeometry(.07,.1,4,8),material(0x34383b),x,2,z,group,"street-lamp");colliders.push({x,z,halfX:.16,halfZ:.16,height:4});const lamp=new THREE.PointLight(0xd0a16b,5,12);lamp.position.set(x,4,z);group.add(lamp);return pole}
+function addLamp(group,x,z,colliders=[]){const pole=mesh(new THREE.CylinderGeometry(.07,.1,4,8),material(0x34383b),x,2,z,group,"street-lamp");colliders.push({x,z,halfX:.16,halfZ:.16,height:4});const lamp=new THREE.PointLight(0xd0a16b,5,12);lamp.position.set(x,4,z);group.add(lamp);return pole}
 export function buildChapterEnvironment(scene,index){
  const [name,floorColor,accent,kind]=CHAPTER_ZONES[index]||CHAPTER_ZONES[0],group=new THREE.Group();
  group.name="CHAPTER_ENV_"+String(index+1).padStart(2,"0")+"_"+name;
@@ -31,7 +31,7 @@ export function buildChapterEnvironment(scene,index){
   for(let x=-18;x<=18;x+=9)addBuilding(x,-19,7,kind==="fortress"?13:kind==="compound"?11:9,6,"industrial-structure");
   for(let z=-12;z<=12;z+=8)addCover(-7,z,2.4,2,2,"crate-stack");
   addBuilding(0,-28,42,kind==="fortress"?8:6,2,"rear-perimeter-wall");
-  for(let x=-20;x<=20;x+=10)addLamp(group,x,-5);
+  for(let x=-20;x<=20;x+=10)addLamp(group,x,-5,colliders);
  }else if(kind==="rooftop"){
   for(let x=-24;x<=24;x+=8)addBuilding(x,-18,7,8+(Math.abs(x)%3),6,"rooftop-tower");
   mesh(new THREE.BoxGeometry(48,1,1),dark,0,.5,26,group,"parapet");
@@ -41,7 +41,7 @@ export function buildChapterEnvironment(scene,index){
   mesh(new THREE.BoxGeometry(10,.4,4),material(0x76563e),0,.2,-18,group,"wedding-stage");
  }else{
   if(!["homes","safehouse","street"].includes(kind))for(let x=-22;x<=22;x+=11){addBuilding(x,-21,8,9+(Math.abs(x)%3)*2,7,"street-building");addBuilding(x,21,8,8,7,"street-building")}
-  for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12)}
+  for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12,colliders)}
   if(kind==="interior"){for(let z=-15;z<=12;z+=5)for(let x of [-10,10])addCover(x,z,2,2.4,1,"archive-shelf")}
  }
  if(["homes","safehouse","street"].includes(kind)){
