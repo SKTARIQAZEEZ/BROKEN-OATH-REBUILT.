@@ -1,50 +1,53 @@
 # BROKEN OATH rebuild roadmap
 
-## Milestones 1–3 — implementation status
+## Active production status
 
-### 1. Mission framework
-- [x] 15-chapter ordered campaign data and unique chapter IDs
-- [x] Mission manager with objective progression and chapter unlocks
-- [x] Objective event validation for reach, collect, defeat, interact, stealth, survive, rescue and evidence objective types
-- [x] Checkpoint snapshots, failure/retry state, evidence flags and campaign serialization
-- [x] Mission state persisted with local save and restored on load
-- [x] Campaign and mission-manager automated tests
-- [x] Canon-ordered typed objective definitions for all 15 chapters (reach, interact, collect, defeat, stealth, survive, rescue, evidence)\n- [x] Runtime objective validation wired to interaction and combat events\n- [ ] Full objective-specific trigger volumes, AI encounter gating and mission failure conditions across every mission
-- [ ] End-to-end browser playthrough of all 15 chapters
+### 1. Missions, triggers and playtesting
+- [x] 15 canon-ordered chapters with typed objectives
+- [x] Mission state, checkpoints, retry, save/restore and evidence flags
+- [x] Proximity auto-trigger for reach objectives
+- [x] Reusable trigger conditions, deadlines, damage limits and failure callbacks
+- [ ] Define and wire authored trigger volumes and failure rules for every individual objective
+- [ ] Complete automated chapter simulation and full browser playthrough of all 15 chapters
 
-### 2. Environments
-- [x] 15 distinct chapter environment profiles and generated spaces
-- [x] Themed blockout geometry for neighbourhood, sports ground, rooftop, operation zone, ruins, compound, city, investigation district, memory arena, warehouse, archive, safehouse, fortress and wedding courtyard
-- [x] Dark cinematic lighting, fog, building facades, props and chapter landmarks
-- [ ] Final high-detail art, interiors, bespoke set dressing and unique traversal/combat layouts
-- [x] Player collision resolution against registered environment blockers\n- [ ] Navigation mesh/pathfinding, collision edge-case validation and per-chapter visual acceptance
+### 2. Environments and navigation
+- [x] Fifteen distinct dark procedural environment blockouts
+- [x] Registered collision blockers, player collision resolution and cover line-of-sight checks
+- [ ] Detailed building exteriors, interiors, bespoke props, destructible set dressing and traversal routes
+- [ ] Navigation mesh/pathfinding for guards and full collision edge-case tests
+- [ ] Visual acceptance review for every chapter
 
-### 3. Characters and animation foundation
-- [x] Named procedural character presets for Azeez, Ranvir, Ananya, Anjali and Devraj
-- [x] Procedural body, clothing, hair, facial placeholder details and role-specific gang/leader variants
-- [x] Basic procedural idle/walk limb animation
-- [ ] Final approved rigged 3D character models, facial rigs, clothing variants and authored animation clips
-- [ ] Combat, stealth, interaction, cinematic and lip-sync animation sets
+### 3. Characters and animation
+- [x] Five named procedural character placeholders and role variants
+- [x] Basic procedural idle, walk, guard, attack and hit poses
+- [ ] Production-quality approved 3D models, topology, UVs, materials and clothing
+- [ ] Rigging, facial blendshapes, facial animation, mocap/author-authored clips and lip-sync
 
-## Remaining milestones
-### 4. Gameplay production
-- [x] Guard vision checks respect environment blockers for cover-based line of sight\n- [ ] Full stealth loop: patrol routes, sound propagation, takedowns, timed search and alarm escalation
-- [ ] Advanced combat: combos, block, counter, dodge, weapons, boss phases and hit reactions
-- [x] Objective-specific enemy wave spawning and full-wave completion checks\n- [ ] Enemy group tactics, navigation and encounter balancing
+### 4. Combat and enemy AI
+- [x] Melee attacks, combo scaling, stamina, block and dodge state logic
+- [x] Guard vision, cover-aware sight, investigate and timed search states
+- [x] Alarm escalation state and last-known-player-position memory
+- [ ] Integrate all combat states with authored player/enemy animation and readable hit reactions
+- [ ] Weapon classes, counters, finishers, boss phases, enemy squad tactics and balancing
+- [ ] Sound propagation, distraction objects, takedowns and alarm response behavior
 
-### 5. Campaign production
-- [x] Chapter-specific cast visibility and placement for the story roster\n- [ ] Distinct mission scripts, encounter waves, checkpoints, story interactions and mission-specific mechanics for all chapters
-- [ ] Ranvir flashbacks in canon order; two distinct confrontations; warehouse rescue; final battle and wedding
-- [ ] Directed cinematics, dialogue branching and story-state continuity
+### 5. Campaign and cinematics
+- [x] Canon-ordered 15-chapter objective data
+- [x] Initial authored dialogue beats for childhood, promise, betrayal, reunion, truth and finale
+- [ ] Fully authored mission-by-mission dialogue, branching story state and continuity validation
+- [ ] Directed in-engine camera work, staging, flashback gameplay sequences and complete cutscenes
+- [ ] Fully playable final battle, family rescue, Ranvir redemption and wedding epilogue
 
-### 6. Audio, UX and optimization
-- [ ] Recorded dialogue, original score, ambience, footsteps, combat and UI SFX
-- [ ] Settings/accessibility, robust save migration, PC/mobile control options
-- [ ] Desktop and physical mobile performance profiling
+### 6. Audio
+- [x] Procedural UI and impact tones
+- [x] Procedural ambience and footstep sound hooks
+- [ ] Professionally produced/original score, location-specific ambience and complete SFX library
+- [ ] Recorded voice performances, editing, mixing, subtitles and lip-sync integration
 
-### 7. Release
-- [ ] Full browser gameplay QA and regression across all chapters
-- [ ] PC/mobile acceptance testing
-- [ ] Verified release ZIP with all assets, source and instructions
+### 7. Release and acceptance
+- [ ] Passing CI for all source checks and gameplay tests
+- [ ] Browser QA of all chapters, save/load, controls, combat, stealth and failure/retry
+- [ ] PC and physical mobile performance/accessibility acceptance
+- [ ] Package all licensed/created assets and verify final `BROKEN_OATH_COMPLETE_GAME.zip`
 
-**Honest status:** the three foundations now have substantial implementation in source. Environment and character work is procedural blockout/placeholder quality, and the 15 missions are not yet individually authored and browser-playtested. Do not call these production-complete until those acceptance items are done.
+**Release gate:** Procedural systems, placeholder geometry, synthesized test tones and text captions are not substitutes for realistic art, rigged animation, recorded dialogue or full chapter playtesting. The project is not complete until every unchecked acceptance item is implemented and verified.
