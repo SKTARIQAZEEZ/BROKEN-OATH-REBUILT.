@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {SoundPropagationSystem,DistractionObject} from "../src/sound-propagation.js";
+const sound=new SoundPropagationSystem({defaultRadius:10});
+const guard={position:{x:4,y:0,z:0}},far={position:{x:20,y:0,z:0}};
+sound.emit({position:{x:0,y:0,z:0},radius:8,type:"footstep"});
+assert.equal(sound.hear(guard).length,1);
+assert.equal(sound.hear(guard,{obstacleTest:()=>true}).length,0);
+assert.equal(sound.hear(far).length,0);
+const prop=new DistractionObject({id:"bottle",position:{x:0,y:0,z:0},radius:15,cooldown:3});
+assert.equal(prop.activate(sound),true);assert.equal(prop.activate(sound),false);
+assert.equal(sound.hear(far).some(e=>e.type==="impact"),false);
+prop.update(3);assert.equal(prop.activate(sound),true);
+sound.update(5);assert.equal(sound.events.length,0);
+assert.throws(()=>sound.emit({position:{x:NaN,y:0,z:0}}),TypeError);
+console.log("Sound propagation and distraction tests passed.");
