@@ -7,8 +7,11 @@ export function createWeaponVisuals(actor){
  const baton=make("baton",[[new THREE.CylinderGeometry(.055,.065,.72,12),dark,0,.34,0],[new THREE.CylinderGeometry(.075,.075,.09,12),brass,0,.04,0],[new THREE.CylinderGeometry(.07,.07,.07,12),steel,0,.68,0]]);
  const knife=make("knife",[[new THREE.CylinderGeometry(.045,.05,.3,10),grip,0,.15,0],[new THREE.BoxGeometry(.055,.08,.09),brass,0,.33,0],[new THREE.ConeGeometry(.075,.42,4),steel,0,.57,0,Math.PI]]);
  const heavy=make("heavy",[[new THREE.CylinderGeometry(.07,.09,.5,12),grip,0,.25,0],[new THREE.CylinderGeometry(.14,.12,.48,8),dark,0,.72,0],[new THREE.TorusGeometry(.12,.025,6,12),brass,0,.49,0]]);
+ const pistol=make("pistol",[[new THREE.BoxGeometry(.14,.22,.34),dark,0,.25,0],[new THREE.BoxGeometry(.12,.11,.48),steel,0,.43,-.12],[new THREE.BoxGeometry(.13,.24,.13),grip,0,.12,.12]]);
+ const rifle=make("rifle",[[new THREE.BoxGeometry(.16,.18,.95),dark,0,.3,-.12],[new THREE.CylinderGeometry(.035,.035,.72,10),steel,0,.36,-.72],[new THREE.BoxGeometry(.14,.3,.2),grip,0,.12,.1],[new THREE.BoxGeometry(.11,.12,.26),dark,0,.3,.42]]);
+ const shotgun=make("shotgun",[[new THREE.BoxGeometry(.18,.2,.8),grip,0,.3,-.1],[new THREE.CylinderGeometry(.045,.045,.85,10),steel,0,.4,-.52],[new THREE.BoxGeometry(.17,.22,.25),dark,0,.3,.38],[new THREE.BoxGeometry(.14,.16,.26),grip,0,.12,.3]]);
  const unarmed=new THREE.Group();unarmed.name="weapon-unarmed";mount.add(unarmed);
- const all={unarmed,baton,knife,heavy};let equipped="unarmed",action="idle",elapsed=0;
+ const all={unarmed,baton,knife,heavy,pistol,rifle,shotgun};let equipped="unarmed",action="idle",elapsed=0;
  function equip(name){if(!all[name])return false;equipped=name;for(const [key,obj] of Object.entries(all))obj.visible=key===name;mount.visible=name!=="unarmed";mount.rotation.set(0,0,0);return true}
  function swing(){action="swing";elapsed=0;return equipped!=="unarmed"}
  function update(dt){if(action==="idle")return;elapsed+=dt;const p=Math.min(1,elapsed/.34);mount.rotation.x=-Math.sin(p*Math.PI)*1.15;mount.rotation.z=Math.sin(p*Math.PI)*.38;if(p>=1){action="idle";mount.rotation.set(0,0,0)}}
