@@ -25,7 +25,7 @@ export class StealthSystem {
       data.state="search";data.searchRemaining=this.searchDuration;
     } else if(data.state==="search"){
       data.searchRemaining=Math.max(0,data.searchRemaining-dt);
-      if(data.searchRemaining===0){data.state="patrol";data.alertTime=0;data.alarmRaised=false}
+      if(data.searchRemaining===0){data.state="patrol";data.lastKnown=null;data.alertTime=0;data.alarmRaised=false}
     }
     return {state:data.state,distance,visible,heard,lastKnown:data.lastKnown,searchRemaining:data.searchRemaining,alarmLevel:this.alarmLevel,alarmActive:this.alarmActive};
   }
