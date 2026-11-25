@@ -46,6 +46,24 @@ export function decorateEnvironment(group,kind,colliders=[]){
   // Restrained warm practicals: the wedding remains cinematic, not brightly saturated.
   for(let x=-9;x<=9;x+=3){light(group,x,4.8,-12,0xe0ad72,1.1,6);prop(group,new THREE.SphereGeometry(.12,10,8),warning,x,4.8,-12,"warm-string-light")}
   for(const x of [-10,10])for(const z of [-15,-7]){prop(group,new THREE.CylinderGeometry(.75,.85,.7,12),wood,x,.35,z,"ceremony-planter");prop(group,new THREE.SphereGeometry(.7,12,8),warning,x,1,z,"flower-arrangement")}
+ }else if(kind==="investigation"){
+  // Azeez returns to a damaged home district: evidence is staged as physical scene detail.
+  for(let i=0;i<8;i++){const x=-15+(i%4)*10,z=-12+Math.floor(i/4)*13;prop(group,new THREE.ConeGeometry(.16,.42,6),warning,x,.21,z,"evidence-marker");prop(group,new THREE.BoxGeometry(.55,.08,.4),glass,x,.46,z,"evidence-tray");addCollider(x,z,.6,.5,.5)}
+  for(const x of [-17,17]){prop(group,new THREE.BoxGeometry(1.5,2.1,.7),metal,x,1.05,-5,"records-cabinet");addCollider(x,-5,1.5,.7,2.1);prop(group,new THREE.BoxGeometry(2.2,1.1,.12),wood,x,2.4,-5.42,"evidence-board");for(let i=0;i<5;i++)prop(group,new THREE.BoxGeometry(.22,.28,.025),warning,x-.75+i*.36,2.42,-5.34,"pinned-evidence")}
+  for(let z=-18;z<=12;z+=6)prop(group,new THREE.CylinderGeometry(.018,.018,28,5),warning,0,.9,z,"crime-scene-tape",[0,0,Math.PI/2]);
+  light(group,0,4,-4,0xc99b67,1.4,12);
+ }else if(kind==="arena"){
+  // Memory and brotherhood arenas carry worn training equipment rather than generic crates.
+  for(const x of [-10,10]){prop(group,new THREE.BoxGeometry(3,.18,.8),wood,x,.45,-8,"training-bench");addCollider(x,-8,3,.8,.9);prop(group,new THREE.CylinderGeometry(.32,.38,1.8,12),rubber,x,1.2,3,"punching-bag");addCollider(x,3,.8,.8,2.4);prop(group,new THREE.CylinderGeometry(.06,.06,2.1,8),metal,x,2.5,3,"bag-chain")}
+  for(let i=0;i<6;i++){const x=-12+i*4;prop(group,new THREE.BoxGeometry(1.2,.55,.8),wood,x,.275,12,"training-sandbag");addCollider(x,12,1.2,.8,.55)}
+  prop(group,new THREE.TorusGeometry(5,.07,8,48),warning,0,.08,-2,"sparring-circle").rotation.x=Math.PI/2;
+  for(const x of [-14,14]){prop(group,new THREE.BoxGeometry(.18,2.4,.18),metal,x,1.2,-19,"goal-post");prop(group,new THREE.BoxGeometry(2.8,.16,.18),metal,x,2.35,-19,"goal-crossbar")}
+ }
+ if(kind==="rooftop"){
+  for(const [x,z] of [[-15,-10],[13,-12]]){prop(group,new THREE.CylinderGeometry(1.35,1.45,2.2,16),metal,x,1.1,z,"rooftop-water-tank");addCollider(x,z,2.8,2.8,2.2)}
+  for(const [x,z] of [[-7,8],[8,10]]){prop(group,new THREE.BoxGeometry(2.4,1.1,1.6),metal,x,.55,z,"rooftop-hvac");addCollider(x,z,2.4,1.6,1.1)}
+  prop(group,new THREE.CylinderGeometry(.9,.9,.08,16),glass,18,2.4,-2,"satellite-dish",[.35,0,0]);
+  for(let i=0;i<4;i++)prop(group,new THREE.CylinderGeometry(.018,.018,34,5),rubber,-17+i*.35,3.8,12,"rooftop-clothesline",[0,0,Math.PI/2]);
  }
  if(kind==="interior"||kind==="safehouse"){
   for(const x of [-18,18])for(const z of [-16,-6,4,14]){prop(group,new THREE.BoxGeometry(.12,3,.12),metal,x,1.5,z,"interior-column");light(group,x,2.8,z,0xc99b67,.8,5)}
