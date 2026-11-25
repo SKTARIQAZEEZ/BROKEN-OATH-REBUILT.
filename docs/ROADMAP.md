@@ -28,7 +28,7 @@
 
 ## Remaining milestones
 ### 4. Gameplay production
-- [ ] Full stealth loop: patrol routes, vision cones, sound propagation, cover, takedowns, search and alarm escalation
+- [x] Guard vision checks respect environment blockers for cover-based line of sight\n- [ ] Full stealth loop: patrol routes, sound propagation, takedowns, timed search and alarm escalation
 - [ ] Advanced combat: combos, block, counter, dodge, weapons, boss phases and hit reactions
 - [x] Objective-specific enemy wave spawning and full-wave completion checks\n- [ ] Enemy group tactics, navigation and encounter balancing
 
