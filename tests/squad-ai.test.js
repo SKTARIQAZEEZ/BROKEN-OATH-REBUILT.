@@ -5,6 +5,10 @@ let result=ai.update("warehouse",guards,{alert:true,playerPosition:{x:10,y:0,z:5
 assert.equal(result.mode,"engage");
 assert.deepEqual(result.assignments.map(a=>a.role),["suppress","flank-left","flank-right"]);
 assert.notDeepEqual(result.assignments[1].target,result.assignments[2].target);
+const coverResult=ai.update("cover-test",guards,{alert:true,playerPosition:{x:12,y:0,z:6},coverPoints:[{x:2,z:2},{x:3,z:3}]});
+assert.equal(coverResult.assignments[0].role,"cover");
+assert.deepEqual(coverResult.assignments[0].target,{x:2,y:0,z:2});
+assert.ok(["flank-left","flank-right"].includes(coverResult.assignments[1].role));
 result=ai.update("warehouse",guards,{alert:false,dt:1});
 assert.equal(result.mode,"search");
 assert.equal(result.assignments.every(a=>a.target!==null),true);
