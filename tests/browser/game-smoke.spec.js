@@ -1,6 +1,7 @@
 import {test,expect} from "@playwright/test";
 
-test("desktop game boots offline, renders the world and exposes core menus",async({page})=>{
+test("desktop game boots offline, renders the world and exposes core menus",async({page},testInfo)=>{
+ test.skip(testInfo.project.name!=="desktop-chromium","Desktop-only smoke test");
  const errors=[];
  page.on("pageerror",error=>errors.push(error.message));
  await page.route("https://**/*",route=>route.abort());
@@ -13,7 +14,7 @@ test("desktop game boots offline, renders the world and exposes core menus",asyn
  await page.locator("#pause").click();
  await expect(page.locator("#pauseMenu")).toBeVisible();
  await page.locator("#audioToggle").click();
- await expect(page.locator("#audioToggle")).toContainText("SOUND: OFF");
+ await expect(page.locator("#audioToggle")).toHaveAttribute("aria-pressed","false");
  await page.locator("#resume").click();
  await expect(page.locator("#pauseMenu")).toBeHidden();
  await page.keyboard.press("c");
@@ -21,13 +22,16 @@ test("desktop game boots offline, renders the world and exposes core menus",asyn
  expect(errors).toEqual([]);
 });
 
-test("mobile layout exposes touch controls and camera surface",async({page})=>{
+test("mobile layout exposes touch controls and camera surface",async({page},testInfo)=>{
+ test.skip(testInfo.project.name!=="mobile-chromium","Mobile-only smoke test");
  const errors=[];
  page.on("pageerror",error=>errors.push(error.message));
  await page.route("https://**/*",route=>route.abort());
  await page.goto("/");
  await expect(page.locator("#loading")).toBeHidden({timeout:20000});
  await expect(page.locator("#game canvas")).toBeVisible();
+ await expect(page.locator("#dialogue")).toBeVisible();
+ await page.locator("#next").tap();
  await expect(page.locator('#touch [data-move="forward"]')).toBeVisible();
  await expect(page.locator('#touch [data-act="attack"]')).toBeVisible();
  await page.locator('#touch [data-act="weapon"]').tap();
