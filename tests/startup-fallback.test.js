@@ -10,4 +10,7 @@ assert.match(css,/#loading\.load-error/,"The recovery screen must have dedicated
 assert.match(html,/aria-label=\"Pause game\"/,"Pause control must have an accessible label");
 assert.match(html,/id=\"toast\" role=\"status\" aria-live=\"polite\"/,"Gameplay messages must be announced accessibly");
 assert.match(html,/id=\"dialogue\" class=\"hide\" role=\"dialog\"/,"Story dialogue must expose dialog semantics");
+assert.match(html,/id=\"audioToggle\" type=\"button\" aria-pressed=\"true\"/,"Pause menu must expose an accessible sound toggle");
+const main=await readFile(new URL("../src/main.js",import.meta.url),"utf8");
+assert.match(main,/\$\(\"#audioToggle\"\)\.onclick=/,"Sound toggle must be wired to the audio director");
 console.log("Startup recovery screen tests passed.");
