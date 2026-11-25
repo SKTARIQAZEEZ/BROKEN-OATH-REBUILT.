@@ -13,5 +13,12 @@ for(const [key,preset] of Object.entries(CHARACTER_PRESETS)){
  character.userData.setAnimation("attack");
  character.userData.animate(1/60,1,false);
  assert.equal(character.userData.animation.name,"attack");
+ character.userData.animate(.5,1.1,false);
+ assert.equal(character.userData.animation.name,"idle","one-shot attack animation must return to idle");
+ for(const action of ["counter","dodge","finisher","hit"]){
+  character.userData.setAnimation(action);
+  character.userData.animate(1.1,2,false);
+  assert.equal(character.userData.animation.name,"idle",action+" animation must recover");
+ }
 }
 console.log("Character checks passed: five named presets, limb rig and animation state API.");
