@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {decorateEnvironment} from "./environment-detail.js";
 const material=(c,r=.9,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const CHAPTER_ZONES=[
  ["Childhood Neighbourhood",0x30383a,0x6b5a43,"homes"],["School & Football Ground",0x39413d,0x66714f,"sports"],["Rooftop & Departure",0x343b42,0x5a6063,"rooftop"],["Operation Perimeter",0x252c33,0x525b61,"industrial"],["Burned Family Home",0x292729,0x4d3930,"ruins"],["Devraj Compound",0x24272b,0x51473c,"compound"],["Controlled City",0x30373a,0x5b5548,"street"],["Evidence District",0x292f33,0x515b5d,"investigation"],["Memory Arena",0x30363a,0x6b604d,"arena"],["Warehouse Prison",0x20282d,0x555044,"warehouse"],["Broken Brotherhood",0x2d3034,0x625448,"arena"],["Records Archive",0x252d33,0x4b5660,"interior"],["Safehouse District",0x303b3c,0x555e4c,"safehouse"],["Devraj Headquarters",0x1c232a,0x5b4238,"fortress"],["Wedding Courtyard",0x343a38,0x88704d,"ceremony"]
@@ -59,6 +60,7 @@ export function buildChapterEnvironment(scene,index){
  const light=new THREE.PointLight(0xc99b67,kind==="interior"?12:18,38);light.position.set(0,8,0);group.add(light);
  const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z],i)=>new THREE.Vector3(x,.12,z));
  const spawn=new THREE.Vector3(0,0,8);
+ decorateEnvironment(group,kind,colliders);
  scene.add(group);
  return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},resolvePosition(position,radius=.42){const p=position.clone();p.x=THREE.MathUtils.clamp(p.x,-28+radius,28-radius);p.z=THREE.MathUtils.clamp(p.z,-28+radius,28-radius);for(const box of colliders){const minX=box.x-box.halfX-radius,maxX=box.x+box.halfX+radius,minZ=box.z-box.halfZ-radius,maxZ=box.z+box.halfZ+radius;if(p.x>minX&&p.x<maxX&&p.z>minZ&&p.z<maxZ){const dx=Math.min(Math.abs(p.x-minX),Math.abs(maxX-p.x)),dz=Math.min(Math.abs(p.z-minZ),Math.abs(maxZ-p.z));if(dx<dz)p.x=p.x<box.x?minX:maxX;else p.z=p.z<box.z?minZ:maxZ}}return p},dispose(){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}};
 }
