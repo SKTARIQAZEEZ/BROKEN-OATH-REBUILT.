@@ -1,10 +1,10 @@
 {
   "name": "broken-oath-rebuilt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --check src/main.js && node --check src/world.js && node --check src/campaign.js && node tests/campaign.test.js",
+    "test": "node --check src/main.js && node --check src/world.js && node --check src/campaign.js && node --check src/mission-manager.js && node --check src/environments.js && node --check src/characters.js && node tests/campaign.test.js && node tests/mission-manager.test.js && node tests/environment.test.js",
     "serve": "python3 -m http.server 8000"
   },
   "dependencies": {
