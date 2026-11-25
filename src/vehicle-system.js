@@ -7,27 +7,59 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
  const root=new THREE.Group();root.name="BROKEN_OATH_DRIVABLE_VEHICLE";
  const paint=new THREE.MeshStandardMaterial({color,roughness:.38,metalness:.62});
  const dark=new THREE.MeshStandardMaterial({color:0x111519,roughness:.82});
+ const rubber=new THREE.MeshStandardMaterial({color:0x090b0d,roughness:.96});
  const glass=new THREE.MeshStandardMaterial({color:0x172a34,roughness:.2,metalness:.25});
  const chrome=new THREE.MeshStandardMaterial({color:0x747b7c,roughness:.3,metalness:.8});
- const body=new THREE.Mesh(new THREE.BoxGeometry(2,0.72,3.8),paint);body.position.y=.82;body.castShadow=true;body.receiveShadow=true;root.add(body);
- const hood=new THREE.Mesh(new THREE.BoxGeometry(1.9,.28,1.05),paint);hood.position.set(0,1.24,-1.22);hood.castShadow=true;root.add(hood);
- const cabin=new THREE.Mesh(new THREE.BoxGeometry(1.72,.85,1.9),paint);cabin.position.set(0,1.55,.18);cabin.castShadow=true;root.add(cabin);
- const windshield=new THREE.Mesh(new THREE.BoxGeometry(1.52,.62,.045),glass);windshield.position.set(0,1.59,-.79);windshield.rotation.x=-.18;root.add(windshield);
- const rearGlass=new THREE.Mesh(new THREE.BoxGeometry(1.5,.55,.045),glass);rearGlass.position.set(0,1.6,1.12);rearGlass.rotation.x=.18;root.add(rearGlass);
- for(const x of [-.89,.89])for(const z of [-.45,.72]){
-  const window=new THREE.Mesh(new THREE.BoxGeometry(.035,.58,.78),glass);window.position.set(x,1.58,z);root.add(window);
+ const trim=new THREE.MeshStandardMaterial({color:0x252a2d,roughness:.55,metalness:.5});
+ const lamp=new THREE.MeshStandardMaterial({color:0xd8d1b5,emissive:0x8b7954,emissiveIntensity:.45});
+ const tailLamp=new THREE.MeshStandardMaterial({color:0x6d201a,emissive:0x3b0805,emissiveIntensity:.3});
+ const add=(name,geometry,material,x,y,z,rx=0,ry=0,rz=0)=>{const mesh=new THREE.Mesh(geometry,material);mesh.name=name;mesh.position.set(x,y,z);mesh.rotation.set(rx,ry,rz);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);return mesh};
+ // Main body, bonnet and raised passenger cell.
+ const body=add("vehicle-body",new THREE.BoxGeometry(2,.72,3.8),paint,0,.82,0);
+ add("bonnet",new THREE.BoxGeometry(1.9,.28,1.05),paint,0,1.24,-1.22);
+ add("roof",new THREE.BoxGeometry(1.72,.12,1.82),paint,0,2.02,.18);
+ add("cabin",new THREE.BoxGeometry(1.72,.72,1.9),paint,0,1.58,.18);
+ // Glazing, pillars and window seals make the cabin read as a vehicle rather than a solid box.
+ add("front-windshield",new THREE.BoxGeometry(1.52,.62,.045),glass,0,1.59,-.79,-.18);
+ add("rear-windshield",new THREE.BoxGeometry(1.5,.55,.045),glass,0,1.6,1.12,.18);
+ for(const x of [-.89,.89]){
+  for(const z of [-.45,.72])add("side-window",new THREE.BoxGeometry(.035,.58,.78),glass,x,1.58,z);
+  for(const z of [-.78,.25,1.08])add("window-pillar",new THREE.BoxGeometry(.065,.78,.075),trim,x,1.58,z);
+  add("door-skin",new THREE.BoxGeometry(.055,.48,1.42),paint,x,.91,.2);
+  add("door-handle",new THREE.BoxGeometry(.045,.055,.2),chrome,x*1.035,1.08,.22);
+  add("side-mirror-stem",new THREE.BoxGeometry(.22,.045,.06),trim,x*1.02,1.72,-.66,0,0,x*.12);
+  add("side-mirror",new THREE.BoxGeometry(.13,.16,.22),dark,x*1.12,1.76,-.68);
+  add("side-sill",new THREE.BoxGeometry(.12,.13,2.3),trim,x,.48,0);
  }
+ // Wheels have rubber sidewalls, metal hubs and a visible arch surround.
  const wheels=[];
  for(const x of [-1.02,1.02])for(const z of [-1.25,1.25]){
-  const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.24,16),dark);wheel.rotation.z=Math.PI/2;wheel.position.set(x,.48,z);wheel.castShadow=true;root.add(wheel);wheels.push(wheel);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.17,.17,.25,12),chrome);hub.rotation.z=Math.PI/2;hub.position.copy(wheel.position);root.add(hub);
+  const wheel=add("rubber-wheel",new THREE.CylinderGeometry(.43,.43,.24,20),rubber,x,.48,z,0,0,Math.PI/2);wheels.push(wheel);
+  add("wheel-hub",new THREE.CylinderGeometry(.19,.19,.255,16),chrome,x,.48,z,0,0,Math.PI/2);
+  add("hub-center",new THREE.CylinderGeometry(.075,.075,.265,12),dark,x,.48,z,0,0,Math.PI/2);
+  add("wheel-arch-trim",new THREE.TorusGeometry(.47,.045,8,24),trim,x*1.015,.48,z,0,Math.PI/2,0);
+  add("brake-disc",new THREE.CylinderGeometry(.28,.28,.025,16),chrome,x*.89,.48,z,0,0,Math.PI/2);
  }
+ // Front fascia: grille, bumper, registration plate and paired headlights.
+ add("front-grille",new THREE.BoxGeometry(.72,.24,.055),dark,0,.91,-1.94);
+ for(let i=0;i<5;i++)add("grille-slat",new THREE.BoxGeometry(.62,.018,.065),chrome,0,.82+i*.045,-1.98);
  for(const x of [-.68,.68]){
-  const headlight=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.08),new THREE.MeshStandardMaterial({color:0xd8d1b5,emissive:0x8b7954,emissiveIntensity:.45}));headlight.position.set(x,1.02,-1.94);root.add(headlight);
-  const rear=new THREE.Mesh(new THREE.BoxGeometry(.4,.18,.08),new THREE.MeshStandardMaterial({color:0x6d201a,emissive:0x3b0805,emissiveIntensity:.3}));rear.position.set(x,1.02,1.94);root.add(rear);
+  add("headlight",new THREE.BoxGeometry(.42,.18,.08),lamp,x,1.02,-1.94);
+  add("rear-light",new THREE.BoxGeometry(.4,.18,.08),tailLamp,x,1.02,1.94);
+  add("front-fog-lamp",new THREE.CylinderGeometry(.07,.07,.035,12),lamp,x,.72,-1.99,Math.PI/2);
+  add("rear-reflector",new THREE.BoxGeometry(.18,.07,.045),tailLamp,x,.82,1.98);
  }
- const bumper=new THREE.Mesh(new THREE.BoxGeometry(2.08,.2,.16),chrome);bumper.position.set(0,.62,-1.96);root.add(bumper);
- root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;scene.add(root);return root;
+ add("front-bumper",new THREE.BoxGeometry(2.08,.2,.16),chrome,0,.62,-1.96);
+ add("rear-bumper",new THREE.BoxGeometry(2.08,.2,.16),chrome,0,.62,1.96);
+ add("front-number-plate",new THREE.BoxGeometry(.48,.12,.025),dark,0,.68,-2.045);
+ add("rear-number-plate",new THREE.BoxGeometry(.48,.12,.025),dark,0,.68,2.045);
+ // Bonnet creases, roof antenna, rear exhaust and discreet roof rails.
+ for(const x of [-.58,.58])add("bonnet-crease",new THREE.BoxGeometry(.035,.018,.78),trim,x,1.39,-1.2);
+ add("roof-antenna",new THREE.CylinderGeometry(.012,.018,.42,6),dark,.48,2.28,.72,0,0,-.12);
+ for(const x of [-.72,.72])add("roof-rail",new THREE.BoxGeometry(.055,.055,1.35),chrome,x,2.12,.2);
+ add("exhaust-tip",new THREE.CylinderGeometry(.065,.065,.18,10),chrome,.58,.35,1.92,Math.PI/2);
+ root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;
+ scene.add(root);return root;
 }
 
 /** Arcade-realistic, collision-aware vehicle handling shared by the campaign chapters. */
