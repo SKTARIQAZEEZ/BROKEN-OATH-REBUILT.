@@ -12,16 +12,18 @@ import {AudioDirector} from "./audio.js";
 import {resolveCircleAgainstAABBs} from "./collision.js";
 import {createMissionObject} from "./mission-objects.js";
 import {encounterSize,encounterPositions,encounterComplete} from "./encounters.js";
+import {applyChapterRoster} from "./chapter-roster.js";
 const $=s=>document.querySelector(s),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,260),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;$("#game").prepend(renderer.domElement);buildWorld(scene);
 let activeEnvironment=null,currentEnvironment=null,activeMissionObject=null;
-function loadChapterEnvironment(index){if(currentEnvironment)currentEnvironment.dispose();currentEnvironment=buildChapterEnvironment(scene,index);activeEnvironment=currentEnvironment.group;}
+function loadChapterEnvironment(index){if(currentEnvironment)currentEnvironment.dispose();currentEnvironment=buildChapterEnvironment(scene,index);activeEnvironment=currentEnvironment.group;if(castActors)applyChapterRoster(index,castActors);}
 loadChapterEnvironment(0);
 const player=createCharacter(CHARACTER_PRESETS.azeez);player.position.copy(currentEnvironment.spawn);player.position.z-=3;scene.add(player);
 const ranvir=createCharacter(CHARACTER_PRESETS.ranvir);ranvir.position.set(4,0,-4);scene.add(ranvir);
 const ananya=createCharacter(CHARACTER_PRESETS.ananya);ananya.position.set(-4,0,-4);scene.add(ananya);
 const anjali=createCharacter(CHARACTER_PRESETS.anjali);anjali.position.set(-3,0,-8);anjali.visible=false;scene.add(anjali);
 const devraj=createCharacter({...CHARACTER_PRESETS.devraj,scale:1.1});devraj.position.set(0,0,-30);devraj.visible=false;scene.add(devraj);
+const castActors={ranvir,ananya,anjali,devraj};applyChapterRoster(0,castActors);
 const enemies=[];for(let i=0;i<8;i++){const e=createCharacter({name:"Gang Enforcer",shirt:0x3c3432,scale:.95,role:"gang"});e.position.set(-12+(i%4)*8,0,-18-Math.floor(i/4)*8);e.userData.hp=3;e.visible=false;scene.add(e);enemies.push(e)}
 const ring=new THREE.Mesh(new THREE.TorusGeometry(1.05,.05,8,32),new THREE.MeshBasicMaterial({color:0xd3a363}));ring.rotation.x=Math.PI/2;scene.add(ring);
 const marker=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),new THREE.MeshBasicMaterial({color:0xc99b5e,transparent:true,opacity:.7}));scene.add(marker);
@@ -50,7 +52,7 @@ function interact(){
  ));
  if(o.type==="rescue"){
   if(player.position.distanceTo(activeMissionObject?.position||marker.position)>3.1){toast("FIND THE HOLDING CELL");return}
-  const captive=o.target==="anjali"?anjali:ananya;captive.visible=true;missionManager.setFlag("rescued_"+o.target,true);advance({target:o.target});return;
+  const captive=o.target==="anjali"?anjali:ananya;captive.position.set(activeMissionObject.position.x,0,activeMissionObject.position.z+.35);captive.visible=true;missionManager.setFlag("rescued_"+o.target,true);advance({target:o.target});return;
  }
  if(o.type==="interact"&&actor){advance({target:o.target});say(actor===ranvir?"Ranvir: You are late, brother.":actor===ananya?"Ananya: I kept waiting, even when it hurt.":actor===anjali?"Anjali: I won't let him take my son again.":"Devraj: You should have stayed away.",actor.name.toUpperCase());return}
  if(player.position.distanceTo(marker.position)<3.1){
