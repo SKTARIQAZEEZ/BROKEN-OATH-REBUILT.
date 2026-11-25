@@ -59,7 +59,18 @@ export function buildChapterEnvironment(scene,index){
  }
  const landmark=mesh(new THREE.BoxGeometry(5,3,1),material(accent),0,1.5,-19,group,"chapter-landmark");landmarks.push(landmark);
  const light=new THREE.PointLight(0xc99b67,kind==="interior"?12:18,38);light.position.set(0,8,0);group.add(light);
- const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z],i)=>new THREE.Vector3(x,.12,z));
+ const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z])=>{
+  const origin={x:THREE.MathUtils.clamp(x,-26.5,26.5),z:THREE.MathUtils.clamp(z,-26.5,26.5)};
+  const clear=(px,pz)=>colliders.every(box=>Math.abs(px-box.x)>=box.halfX+.7||Math.abs(pz-box.z)>=box.halfZ+.7);
+  if(clear(origin.x,origin.z))return new THREE.Vector3(origin.x,.12,origin.z);
+  let best=null,bestDistance=Infinity;
+  for(let px=-26.5;px<=26.5;px+=.5)for(let pz=-26.5;pz<=26.5;pz+=.5){
+   if(!clear(px,pz))continue;
+   const distance=(px-origin.x)**2+(pz-origin.z)**2;
+   if(distance<bestDistance){bestDistance=distance;best={x:px,z:pz}}
+  }
+  return new THREE.Vector3(best?.x??0,.12,best?.z??8);
+ });
  const spawn=new THREE.Vector3(0,0,8);
  decorateEnvironment(group,kind,colliders);
  scene.add(group);
