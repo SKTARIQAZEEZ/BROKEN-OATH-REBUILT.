@@ -35,7 +35,37 @@ function load(){const s=saves.load();if(s){chapter=Math.max(0,Math.min(14,s.chap
 function say(text,who="STORY"){paused=true;$("#speaker").textContent=who;$("#line").textContent=text;$("#dialogue").classList.remove("hide")}
 $("#next").onclick=()=>{$("#dialogue").classList.add("hide");paused=false};
 function advance(payload={}){const before=chapter;if(!missionManager.completeObjective(payload)){toast("OBJECTIVE REQUIREMENT NOT MET");return false}chapter=missionManager.chapter;step=missionManager.objective;if(chapter!==before){loadChapterEnvironment(chapter);player.position.copy(currentEnvironment.spawn);player.position.z-=3;alerted=false;survivalTime=0;say(CAMPAIGN[chapter].story,"CHAPTER "+String(chapter+1).padStart(2,"0"))}else if(missionManager.status==="complete"){say("Azeez: You actually kept your promise. Ranvir: We did. Together.","THE PROMISE FULFILLED")}missionManager.setCheckpoint({chapter,objective:step,player:{x:player.position.x,z:player.position.z}});target();hud();save();return true}
-function interact(){if(paused)return;audio.start();audio.playUI();if(player.position.distanceTo(marker.position)<3.1){const o=missionManager.objectiveData;if(!o)return;const payload={};if(o.type==="reach")payload.zone=o.target;else if(o.type==="collect")payload.item=o.target;else if(o.type==="evidence"){missionManager.collectEvidence(o.target);payload.target=o.target}else if(o.type==="defeat"){toast("DEFEAT THE TARGET FIRST");return}else if(o.type==="stealth"){payload.alerted=alerted;if(alerted){toast("GUARDS HAVE SPOTTED YOU — HIDE AND TRY AGAIN");return}}else if(o.type==="survive"){payload.elapsed=survivalTime;if(survivalTime<(o.duration||12)){toast("SURVIVE THE ENCOUNTER — "+Math.ceil((o.duration||12)-survivalTime)+"s LEFT");return}}else payload.target=o.target;advance(payload);return}const cast=[ranvir,ananya,anjali,devraj,...enemies].filter(o=>o.visible&&o.position.distanceTo(player.position)<3.1);if(cast.length){const o=cast[0];say(o===ranvir?"Ranvir: You are late, brother.":o===ananya?"Ananya: I kept waiting, even when it hurt.":o===anjali?"Anjali: I won't let him take my son again.":o===devraj?"Devraj: You should have stayed away.":"A gang enforcer blocks your path.",o.name.toUpperCase());return}toast("MOVE CLOSER TO THE GOLD OBJECTIVE")}
+function interact(){
+ if(paused)return;audio.start();audio.playUI();
+ const o=missionManager.objectiveData;if(!o)return;
+ const near=(a)=>a.visible&&a.position.distanceTo(player.position)<3.1;
+ const actor=[ranvir,ananya,anjali,devraj].find(a=>near(a)&&(
+  o.target===a.userData.name.toLowerCase()||
+  (o.target==="family"&&(a===ananya||a===anjali))||
+  (o.target==="ranvir-truth"&&a===ranvir)||
+  (o.target==="ranvir-final"&&a===ranvir)
+ ));
+ if(o.type==="rescue"){
+  const captive=o.target==="anjali"?anjali:ananya;
+  if(!near(captive)&&captive.visible===false&&player.position.distanceTo(marker.position)>3.1){toast("FIND THE HOLDING CELL");return}
+  captive.visible=true;missionManager.setFlag("rescued_"+o.target,true);advance({target:o.target});return;
+ }
+ if(o.type==="interact"&&actor){advance({target:o.target});say(actor===ranvir?"Ranvir: You are late, brother.":actor===ananya?"Ananya: I kept waiting, even when it hurt.":actor===anjali?"Anjali: I won't let him take my son again.":"Devraj: You should have stayed away.",actor.name.toUpperCase());return}
+ if(player.position.distanceTo(marker.position)<3.1){
+  const payload={};
+  if(o.type==="reach")payload.zone=o.target;
+  else if(o.type==="collect")payload.item=o.target;
+  else if(o.type==="evidence"){missionManager.collectEvidence(o.target);payload.target=o.target}
+  else if(o.type==="defeat"){toast("DEFEAT THE TARGET FIRST");return}
+  else if(o.type==="stealth"){payload.alerted=alerted;if(alerted){toast("GUARDS HAVE SPOTTED YOU — HIDE AND TRY AGAIN");return}}
+  else if(o.type==="survive"){payload.elapsed=survivalTime;if(survivalTime<(o.duration||12)){toast("SURVIVE THE ENCOUNTER — "+Math.ceil((o.duration||12)-survivalTime)+"s LEFT");return}}
+  else payload.target=o.target;
+  advance(payload);return;
+ }
+ const cast=[ranvir,ananya,anjali,devraj,...enemies].filter(a=>near(a));
+ if(cast.length){const a=cast[0];say(a===ranvir?"Ranvir: You are late, brother.":a===ananya?"Ananya: I kept waiting, even when it hurt.":a===anjali?"Anjali: I won't let him take my son again.":a===devraj?"Devraj: You should have stayed away.":"A gang enforcer blocks your path.",a.name.toUpperCase());return}
+ toast("MOVE CLOSER TO THE OBJECTIVE OR CHARACTER");
+}
 function attack(){player.userData.setAnimation("attack");const result=combat.attack(player,enemies,(target,info)=>{target.userData.setAnimation?.("hit");audio.playHit();toast(info.defeated?"ENEMY DEFEATED":"MELEE HIT")});if(result.defeated&&missionManager.objectiveData?.type==="defeat")advance({target:missionManager.objectiveData.target});else if(!result.hit)toast(result.reason==="cooldown"?"WAIT FOR THE NEXT ATTACK":"NO ENEMY IN RANGE")}
 function pause(){paused=!paused;$("#pauseMenu").classList.toggle("hide",!paused)}
 $("#pause").onclick=pause;$("#resume").onclick=pause;$("#save").onclick=save;$("#restart").onclick=()=>{missionManager.retry();chapter=missionManager.chapter;step=missionManager.objective;health=100;loadChapterEnvironment(chapter);player.position.copy(currentEnvironment.spawn);player.position.z-=3;alerted=false;survivalTime=0;target();hud();pause()};
