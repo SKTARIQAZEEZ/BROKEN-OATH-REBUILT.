@@ -4,7 +4,8 @@ const style=document.createElement("style");style.textContent=`
 .world-map-head{display:flex;justify-content:space-between;align-items:center;gap:18px}.world-map-head small{color:#c99b5e;letter-spacing:2px;font-size:9px}.world-map-head h2{font-size:clamp(20px,3vw,30px);letter-spacing:4px;margin:8px 0}.world-map-head p{color:#aeb8c1;font-size:12px;margin:0 0 12px}.world-map-panel svg{display:block;width:100%;height:auto;max-height:68vh;background:#101a20;border:1px solid #34434b}.map-node{cursor:pointer;outline:none}.map-node-halo{fill:#c99b5e;opacity:.12}.map-node-dot{fill:#c99b5e;stroke:#f1d5a9;stroke-width:.35}.map-node-num{font-size:1.35px;fill:#10151a;font-weight:900;pointer-events:none}.map-node-label{font-size:1.8px;fill:#e5e9e8;paint-order:stroke;stroke:#111a20;stroke-width:.55px;stroke-linejoin:round}.map-node.current .map-node-halo{opacity:.55;fill:#f0c27e}.map-node.current .map-node-dot{fill:#fff0cf;stroke:#c99b5e;stroke-width:.6}.map-node:focus .map-node-dot{stroke:#fff;stroke-width:.8}.world-map-foot{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;padding-top:14px;color:#aeb8c1;font-size:9px;letter-spacing:1.3px}.world-map-foot span:first-child{color:#e3bd83}
 @media(max-width:600px){#mapButton{right:64px;top:15px;padding:9px 10px}.world-map{padding:6px}.world-map-panel{padding:10px}.world-map-head{align-items:flex-start}.world-map-head button{padding:8px;font-size:9px}.world-map-panel svg{max-height:none}.map-node-label{font-size:2px}.world-map-foot{font-size:8px;gap:8px}}
 `;document.head.append(style);
-\nconst NODES=[
+
+const NODES=[
  ["01","The Days Before","Childhood neighbourhood","homes",8,10],
  ["02","Love and Friendship","School & football ground","sports",23,7],
  ["03","The Promise","Rooftop & departure","rooftop",38,10],
