@@ -9,6 +9,8 @@ assert.match(stealthSetup[1],/e\.visible=true/,"Stealth guards must be active in
 assert.match(stealthSetup[1],/e\.userData\.setAnimation\(\"guard\"\)/,"Stealth guards must enter their guard animation state");
 assert.match(source,/failWhen:context=>context\.alerted===true/,"A detected infiltration must fail through the mission trigger");
 assert.match(source,/moving:dir\.lengthSq\(\)>0/,"Guard awareness must account for actual player movement rather than treating every step as stationary");
+assert.match(source,/guard\.userData\.isMoving=true/,"Guard pathing must flag locomotion so its walk animation can play");
+assert.match(source,/userData\.animate\?\.\(dt,animationTime,Boolean\(e\.userData\.isMoving\)\)/,"Moving guards must advance their locomotion animation after AI steering");
 assert.match(source,/e\.userData\.patrolX=positions\[i\]\.x;e\.userData\.patrolZ=positions\[i\]\.z/,"Infiltration guards must patrol around the active mission site");
 assert.match(source,/else if\(o\.type===\"survive\"\)\{const count=o\.target===\"training\"\?2:3/,"Survival objectives must create active combat pressure");
 assert.match(source,/MISSION FAILED — RESTART THE CHAPTER TO TRY AGAIN/,"Mission failure must tell the player how to recover");
