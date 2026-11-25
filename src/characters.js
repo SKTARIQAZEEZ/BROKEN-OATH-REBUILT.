@@ -11,6 +11,8 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
  part(new THREE.SphereGeometry(.275*scale,16,8,0,Math.PI*2,0,Math.PI*.48),hairMat,0,.29*scale,0,headPivot);
  part(new THREE.BoxGeometry(.17*scale,.035*scale,.025*scale),mat(0x17191b),0,.20*scale,-.245*scale,headPivot);
  part(new THREE.ConeGeometry(.055*scale,.13*scale,8),skinMat,0,.13*scale,-.27*scale,headPivot);
+ const eyeMat=mat(0x171412,.35),browMat=mat(0x30221c),mouth=part(new THREE.SphereGeometry(.052*scale,12,8),mat(0x3c1716),0,.075*scale,-.258*scale,headPivot);mouth.scale.set(1,.22,.28);
+ const brows=[];for(const x of [-1,1]){part(new THREE.SphereGeometry(.032*scale,10,8),eyeMat,x*.095*scale,.205*scale,-.235*scale,headPivot);const brow=part(new THREE.BoxGeometry(.105*scale,.025*scale,.035*scale),browMat,x*.095*scale,.255*scale,-.235*scale,headPivot);brows.push(brow)}
  // Hairline side locks and ears make silhouettes more readable at gameplay distance.
  for(const x of [-1,1]){part(new THREE.SphereGeometry(.055*scale,8,8),skinMat,x*.265*scale,.17*scale,0,headPivot);part(new THREE.CapsuleGeometry(.045*scale,.18*scale,4,6),hairMat,x*.22*scale,.12*scale,-.03*scale,headPivot)}
  const limbs={legs:[],arms:[],feet:[]};
@@ -34,10 +36,10 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
   part(new THREE.CapsuleGeometry(.44*scale,.92*scale,5,10),mat(0x1c2228),0,1.08*scale,.035*scale,root);
   part(new THREE.BoxGeometry(.07*scale,.42*scale,.04*scale),accentMat,.12*scale,1.25*scale,-.36*scale,root);
  }
- const animation={name:"idle",elapsed:0};
- root.userData={name,limbs,headPivot,animation, setAnimation(name){animation.name=name;animation.elapsed=0},animate(dt,time,moving=false){
+ const animation={name:"idle",elapsed:0,talking:false,expression:"neutral"};
+ root.userData={name,limbs,headPivot,animation,face:{mouth,brows},setExpression(expression="neutral"){animation.expression=expression;const tilt=expression==="angry"?.16:expression==="sad"?-.12:0;brows[0].rotation.z=tilt;brows[1].rotation.z=-tilt;mouth.scale.y=expression==="surprised"?.8:expression==="sad"?.35:.22},setTalking(value){animation.talking=!!value},setAnimation(name){animation.name=name;animation.elapsed=0},animate(dt,time,moving=false){
   if(moving&&animation.name==="idle")animation.name="walk";if(!moving&&animation.name==="walk")animation.name="idle";
-  animation.elapsed+=dt;const t=time*9,swing=moving?Math.sin(t)*.55:0;
+  animation.elapsed+=dt;const t=time*9,swing=moving?Math.sin(t)*.55:0;mouth.scale.y=animation.talking?.22+Math.abs(Math.sin(time*13))*.48:(animation.expression==="surprised"?.8:.22);
   limbs.legs[0].rotation.x=swing;limbs.legs[1].rotation.x=-swing;
   limbs.arms[0].rotation.x=-swing*.7;limbs.arms[1].rotation.x=swing*.7;
   if(animation.name==="attack"){limbs.arms[0].rotation.x=-1.15;limbs.arms[0].rotation.z=-.35}
