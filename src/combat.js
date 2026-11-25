@@ -1,21 +1,8 @@
 export class CombatSystem {
-  constructor({range=3.0,cooldown=.48,damage=1}={}) {
-    this.range=range; this.cooldown=cooldown; this.damage=damage; this.timer=0;
-  }
-  update(dt){this.timer=Math.max(0,this.timer-dt)}
-  attack(actor,targets,onHit=()=>{}) {
-    if(this.timer>0)return {hit:false,reason:"cooldown"};
-    this.timer=this.cooldown;
-    let target=null,nearest=this.range;
-    for(const candidate of targets){
-      if(!candidate.visible || candidate.userData?.dead)continue;
-      const d=actor.position.distanceTo(candidate.position);
-      if(d<nearest){nearest=d;target=candidate}
-    }
-    if(!target)return {hit:false,reason:"out-of-range"};
-    target.userData.hp=(target.userData.hp??3)-this.damage;
-    if(target.userData.hp<=0){target.userData.dead=true;target.visible=false}
-    onHit(target,{damage:this.damage,defeated:!!target.userData.dead});
-    return {hit:true,target,defeated:!!target.userData.dead};
-  }
+ constructor({range=3,cooldown=.48,damage=1,comboWindow=.9,maxCombo=3,dodgeCost=22,blockDrain=8}={}){Object.assign(this,{range,cooldown,damage,comboWindow,maxCombo,dodgeCost,blockDrain});this.timer=0;this.combo=0;this.comboTimer=0;this.blocking=false;this.dodging=0;this.stamina=100}
+ update(dt){this.timer=Math.max(0,this.timer-dt);this.comboTimer=Math.max(0,this.comboTimer-dt);this.dodging=Math.max(0,this.dodging-dt);if(!this.comboTimer)this.combo=0;if(this.blocking)this.stamina=Math.max(0,this.stamina-this.blockDrain*dt);else this.stamina=Math.min(100,this.stamina+12*dt)}
+ setBlocking(v){this.blocking=!!v&&this.stamina>0;return this.blocking}
+ dodge(){if(this.stamina<this.dodgeCost||this.dodging>0)return false;this.stamina-=this.dodgeCost;this.dodging=.42;this.blocking=false;return true}
+ attack(actor,targets,onHit=()=>{}){if(this.timer>0)return{hit:false,reason:"cooldown"};if(this.blocking)return{hit:false,reason:"blocking"};if(this.stamina<5)return{hit:false,reason:"stamina"};this.stamina-=5;this.timer=this.cooldown;this.combo=this.comboTimer>0?Math.min(this.maxCombo,this.combo+1):1;this.comboTimer=this.comboWindow;const damage=this.damage+(this.combo===this.maxCombo?1:0);let target=null,nearest=this.range;for(const c of targets){if(!c.visible||c.userData?.dead)continue;const d=actor.position.distanceTo(c.position);if(d<nearest){nearest=d;target=c}}if(!target)return{hit:false,reason:"out-of-range",combo:this.combo};target.userData.hp=(target.userData.hp??3)-damage;if(target.userData.hp<=0){target.userData.dead=true;target.visible=false}onHit(target,{damage,defeated:!!target.userData.dead,combo:this.combo});return{hit:true,target,damage,combo:this.combo,defeated:!!target.userData.dead}}
+ receiveHit(amount){if(this.dodging>0)return{damage:0,evaded:true};if(this.blocking&&this.stamina>0){const absorbed=Math.min(amount*.8,this.stamina*.5);this.stamina=Math.max(0,this.stamina-absorbed*2);return{damage:amount-absorbed,blocked:true}}return{damage:amount,blocked:false}}
 }
