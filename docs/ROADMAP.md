@@ -12,6 +12,9 @@
 - [x] 15 distinct dark procedural chapter blockouts
 - [x] Collision blockers, line-of-sight obstruction and player collision resolution
 - [x] Furnished interior room kits in warehouse, archive, fortress, compound and safehouse-style locations
+- [x] Residential house facades with pitched roof silhouettes, doors, windows, porches and physical collision
+- [x] Drivable chapter vehicles with enter/exit, throttle, reverse, steering, follow camera, speed HUD and environment collision
+- [x] Collision blockers for cover crates, barrels, utility poles, street lamps, planters, rooftop equipment and structural props
 - [x] Chapter-specific set dressing: industrial pipe/cable runs, drums, pallets, crates, barriers, utility poles/wires, street furniture, burned debris, ceremony lights and planters
 - [x] Deterministic procedural PBR albedo and bump maps for asphalt, concrete, stone, metal, wood, burnt surfaces and fabric
 - [x] Grid-based A* navigation used by guards during search/investigation
@@ -48,7 +51,8 @@
 ## Remaining production and verification gates
 
 - [ ] Replace procedural character placeholders with licensed/created production models and rigs
-- [ ] Replace blockout geometry with detailed bespoke environments, interiors, props and final materials
+- [ ] Replace remaining blockout geometry with detailed bespoke environments, interiors, props and final materials
+- [ ] Replace procedural gameplay vehicles with authored production vehicle models and tune advanced suspension/damage physics
 - [ ] Complete animation, recorded voice and audio asset integration
 - [ ] Full interactive browser playthrough of all 15 chapters, including every failure/retry path and save/load transition
 - [ ] Manual visual QA of lighting, collision, navigation, combat, cutscenes and accessibility
