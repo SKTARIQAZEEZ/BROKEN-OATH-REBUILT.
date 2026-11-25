@@ -17,7 +17,7 @@
 - [x] Themed blockout geometry for neighbourhood, sports ground, rooftop, operation zone, ruins, compound, city, investigation district, memory arena, warehouse, archive, safehouse, fortress and wedding courtyard
 - [x] Dark cinematic lighting, fog, building facades, props and chapter landmarks
 - [ ] Final high-detail art, interiors, bespoke set dressing and unique traversal/combat layouts
-- [ ] Collision/navigation validation and per-chapter visual acceptance
+- [x] Player collision resolution against registered environment blockers\n- [ ] Navigation mesh/pathfinding, collision edge-case validation and per-chapter visual acceptance
 
 ### 3. Characters and animation foundation
 - [x] Named procedural character presets for Azeez, Ranvir, Ananya, Anjali and Devraj
@@ -30,7 +30,7 @@
 ### 4. Gameplay production
 - [ ] Full stealth loop: patrol routes, vision cones, sound propagation, cover, takedowns, search and alarm escalation
 - [ ] Advanced combat: combos, block, counter, dodge, weapons, boss phases and hit reactions
-- [ ] Enemy group tactics, navigation and encounter balancing
+- [x] Objective-specific enemy wave spawning and full-wave completion checks\n- [ ] Enemy group tactics, navigation and encounter balancing
 
 ### 5. Campaign production
 - [ ] Distinct mission scripts, encounter waves, checkpoints, story interactions and mission-specific mechanics for all chapters
