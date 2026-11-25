@@ -1,13 +1,13 @@
-# BROKEN OATH authored character assets
+# BROKEN OATH real character assets
 
-The runtime loader expects these exact files:
+Install the supplied character and NPC archives with:
 
-- `public/assets/characters/Azeez.glb`
-- `public/assets/characters/Ranvir.glb`
-- `public/assets/characters/Ananya.glb`
-- `public/assets/characters/Anjali.glb`
-- `public/assets/characters/Devraj.glb`
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-character-assets.ps1 -CharacterZip .\BROKEN_OATH_CHARACTER_PACK_v001.zip -NpcZip .\BROKEN_OATH_NPC_PACK_V001.zip
+```
 
-Copy the five GLB files from the PowerShell export ZIP into this folder. Do not rename them. The loader scales each model to its authored character height, preserves the actor's gameplay root and weapon mount, and plays the embedded Idle, Walk, Run, Punch, Fighting stance, and kick/block clips. If a file is absent or fails to load, the existing procedural stand-in remains visible.
+The installer copies the eight named/adolescent models, twelve gang variants, and all NPC/guard/mini-boss/worker models into the exact public paths used by the runtime. The main cast and gang GLBs are loaded by `src/main.js` through `attachCharacterAsset`; the child versions are selected for the early childhood chapters.
 
-The GLBs are intentionally not duplicated into source code. Keep the original exports as the source of truth and commit the five binary files to this folder (or use Git LFS if repository size limits require it).
+The supplied GLBs are real rigged glTF binary assets. The named cast exports contain a skin and 21 animation clips. The random gang exports contain a skin but no embedded clips; the runtime can use the shared Azeez animation library when the updated shared-clip loader is installed. NPC archive models are provided for subsequent roster wiring.
+
+Do not rename the GLBs or flatten the `Gang_Members` directory: runtime URLs depend on these names.
