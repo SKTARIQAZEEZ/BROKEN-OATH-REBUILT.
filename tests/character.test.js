@@ -6,6 +6,10 @@ for(const [key,preset] of Object.entries(CHARACTER_PRESETS)){
  assert.equal(character.userData.limbs.legs.length,2);
  assert.equal(character.userData.limbs.arms.length,2);
  assert.equal(typeof character.userData.setAnimation,"function");
+ assert.equal(typeof character.userData.setExpression,"function");
+ assert.equal(typeof character.userData.setTalking,"function");
+ character.userData.setExpression("angry");character.userData.setTalking(true);character.userData.animate(1/60,1,false);
+ assert.ok(character.userData.face.mouth.scale.y>.22);character.userData.setTalking(false);
  character.userData.setAnimation("attack");
  character.userData.animate(1/60,1,false);
  assert.equal(character.userData.animation.name,"attack");
