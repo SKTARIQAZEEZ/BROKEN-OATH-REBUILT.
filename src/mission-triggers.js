@@ -3,7 +3,7 @@ export class MissionTriggerSystem {
  register(id,config){if(!id||this.triggers.has(id))throw new Error("Trigger id must be unique");this.triggers.set(id,{id,active:true,once:true,...config});return this}
  reset(){this.failed=false;this.elapsed=0;this.damageTaken=0;for(const t of this.triggers.values())t.active=true}
  clear(){this.triggers.clear();this.reset()}
- update(dt,context={}){if(this.failed)return[];this.elapsed+=dt;const fired=[];for(const t of this.triggers.values()){if(!t.active)continue;if(t.deadline&&this.elapsed>t.deadline)return this.fail("TIME_LIMIT",t.id);if(t.maxDamage!==undefined&&this.damageTaken>t.maxDamage)return this.fail("DAMAGE_LIMIT",t.id);if(t.condition?.(context)){fired.push(t.id);this.onTrigger(t.id,context);if(t.once)t.active=false}}return fired}
+ update(dt,context={}){if(this.failed)return[];this.elapsed+=dt;const fired=[];for(const t of this.triggers.values()){if(!t.active)continue;if(t.deadline&&this.elapsed>t.deadline)return this.fail("TIME_LIMIT",t.id);if(t.maxDamage!==undefined&&this.damageTaken>t.maxDamage)return this.fail("DAMAGE_LIMIT",t.id);if(t.failWhen?.(context))return this.fail(t.failureReason||"TRIGGER_FAILED",t.id);if(t.condition?.(context)){fired.push(t.id);this.onTrigger(t.id,context);if(t.once)t.active=false}}return fired}
  recordDamage(amount){this.damageTaken+=Math.max(0,amount)}
  fail(reason,triggerId=null){this.failed=true;this.onFailure({reason,triggerId,elapsed:this.elapsed,damageTaken:this.damageTaken});return false}
  isFailed(){return this.failed}
