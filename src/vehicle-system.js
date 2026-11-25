@@ -13,6 +13,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
  const trim=new THREE.MeshStandardMaterial({color:0x252a2d,roughness:.55,metalness:.5});
  const lamp=new THREE.MeshStandardMaterial({color:0xd8d1b5,emissive:0x8b7954,emissiveIntensity:.45});
  const tailLamp=new THREE.MeshStandardMaterial({color:0x6d201a,emissive:0x3b0805,emissiveIntensity:.3});
+ const reverseLamp=new THREE.MeshStandardMaterial({color:0xd7d3c5,emissive:0x7b786e,emissiveIntensity:.08});
  const add=(name,geometry,material,x,y,z,rx=0,ry=0,rz=0)=>{const mesh=new THREE.Mesh(geometry,material);mesh.name=name;mesh.position.set(x,y,z);mesh.rotation.set(rx,ry,rz);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);return mesh};
  // Main body, bonnet and raised passenger cell.
  const body=add("vehicle-body",new THREE.BoxGeometry(2,.72,3.8),paint,0,.82,0);
@@ -46,6 +47,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
  for(const x of [-.68,.68]){
   add("headlight",new THREE.BoxGeometry(.42,.18,.08),lamp,x,1.02,-1.94);
   add("rear-light",new THREE.BoxGeometry(.4,.18,.08),tailLamp,x,1.02,1.94);
+  add("reverse-light",new THREE.BoxGeometry(.16,.09,.05),reverseLamp,x*.52,.82,1.99);
   add("front-fog-lamp",new THREE.CylinderGeometry(.07,.07,.035,12),lamp,x,.72,-1.99,Math.PI/2);
   add("rear-reflector",new THREE.BoxGeometry(.18,.07,.045),tailLamp,x,.82,1.98);
  }
@@ -58,7 +60,7 @@ function makeVehicle(scene,color=VEHICLE_COLORS[0]){
  add("roof-antenna",new THREE.CylinderGeometry(.012,.018,.42,6),dark,.48,2.28,.72,0,0,-.12);
  for(const x of [-.72,.72])add("roof-rail",new THREE.BoxGeometry(.055,.055,1.35),chrome,x,2.12,.2);
  add("exhaust-tip",new THREE.CylinderGeometry(.065,.065,.18,10),chrome,.58,.35,1.92,Math.PI/2);
- root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;
+ root.userData.wheels=wheels;root.userData.speed=0;root.userData.paint=paint;root.userData.brakeMaterial=tailLamp;root.userData.reverseLights=root.children.filter(o=>o.name==="reverse-light");
  scene.add(root);return root;
 }
 
@@ -129,7 +131,7 @@ export class VehicleSystem{
   if(collided)this.onMessage("VEHICLE COLLISION");
   if(this.collider){this.collider.x=this.vehicle.position.x;this.collider.z=this.vehicle.position.z;}
   this.vehicle.rotation.y=this.yaw;for(const wheel of this.vehicle.userData.wheels)wheel.rotation.x-=this.speed*dt*1.8;
-  this.vehicle.userData.speed=this.speed;if(player)player.position.copy(this.vehicle.position);
+  this.vehicle.userData.speed=this.speed;this.vehicle.userData.brakeMaterial.emissiveIntensity=input.brake?2.1:.3;for(const light of this.vehicle.userData.reverseLights)light.visible=this.speed<-.15;if(player)player.position.copy(this.vehicle.position);
  }
  dispose(){this.exit(false);if(this.environment&&this.collider)this.environment.colliders=this.environment.colliders.filter(c=>c!==this.collider);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}this.vehicle=null;this.collider=null;this.environment=null;}
 }
