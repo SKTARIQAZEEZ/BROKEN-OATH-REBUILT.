@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {dressCharacter} from "./character-detail.js";
 const mat=(c,r=.75,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 function part(geo,material,x,y,z,parent){const o=new THREE.Mesh(geo,material);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98745d,hair=0x211b18,scale=1,role="civilian",accent=0x8b765d}={}){
@@ -50,6 +51,7 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
   else if(animation.name==="hit"){headPivot.rotation.x=.22;limbs.arms[0].rotation.x=.6}
   else {root.rotation.z=0;root.rotation.x=0;headPivot.rotation.x=Math.sin(time*1.4)*.025;limbs.arms.forEach(a=>{a.rotation.z=0;if(animation.name==="idle"||animation.name==="walk")a.rotation.x=0})}
  }};
+ root.userData.detailMaterials=dressCharacter(root,{name,role,scale,accent,skin,hair}).materials;
  return root;
 }
 export const CHARACTER_PRESETS={
