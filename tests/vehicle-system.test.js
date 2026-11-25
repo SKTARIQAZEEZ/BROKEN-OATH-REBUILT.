@@ -20,7 +20,7 @@ const preBrake=vehicles.speed;vehicles.brake(.05);assert.ok(vehicles.speed<preBr
 vehicles.update(.5,{forward:true},player);
 const barrier={x:vehicles.position.x,z:vehicles.position.z-4.5,halfX:2,halfZ:.5,height:2};environment.colliders.push(barrier);
 const beforeImpact=vehicles.position.clone();vehicles.update(.5,{forward:true},player);
-assert.deepEqual(vehicles.position.toArray(),beforeImpact.toArray(),"vehicle must stop rather than pass through solid cover");
+assert.ok(vehicles.position.z>barrier.z+barrier.halfZ+1.95,"vehicle must stop on the near side of solid cover");assert.equal(vehicles.speed,0,"collision must stop vehicle momentum");
 environment.colliders=environment.colliders.filter(c=>c!==barrier);
 assert.equal(vehicles.toggle(player).driving,false,"V toggles back to on-foot mode");
 assert.equal(player.visible,true,"player mesh returns after exiting");
