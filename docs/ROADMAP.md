@@ -9,7 +9,7 @@
 - [x] Checkpoint snapshots, failure/retry state, evidence flags and campaign serialization
 - [x] Mission state persisted with local save and restored on load
 - [x] Campaign and mission-manager automated tests
-- [ ] Chapter-specific authored objective scripting and complete failure conditions across every mission
+- [x] Canon-ordered typed objective definitions for all 15 chapters (reach, interact, collect, defeat, stealth, survive, rescue, evidence)\n- [x] Runtime objective validation wired to interaction and combat events\n- [ ] Full objective-specific trigger volumes, AI encounter gating and mission failure conditions across every mission
 - [ ] End-to-end browser playthrough of all 15 chapters
 
 ### 2. Environments
