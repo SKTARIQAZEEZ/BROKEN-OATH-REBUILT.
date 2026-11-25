@@ -6,11 +6,11 @@ const ROSTERS=[
  {ranvir:[4,0,-4]},
  {ranvir:[0,0,-20],devraj:[3,0,-24]},
  {ranvir:[0,0,-12],devraj:[12,0,-20]},
- {ranvir:[4,0,-4],ananya:[-4,0,-4]},
- {ranvir:[4,0,-4],ananya:[-4,0,-4]},
+ {ranvir:[4,0,-4]},
+ {ranvir:[4,0,-4]},
  {ranvir:[4,0,-4]}, // Prisoners remain hidden until their rescue objectives complete.
- {ranvir:[4,0,-4],ananya:[-4,0,-4]},
- {ranvir:[4,0,-4],devraj:[10,0,-24]},
+ {ranvir:[4,0,-4],ananya:[-4,0,-4],anjali:[-3,0,-8]},
+ {ranvir:[4,0,-4],ananya:[-4,0,-4],anjali:[-3,0,-8],devraj:[10,0,-24]},
  {ranvir:[4,0,-4],ananya:[-4,0,-4],anjali:[-3,0,-8]},
  {ranvir:[0,0,-22],anjali:[-4,0,-16],ananya:[4,0,-16],devraj:[0,0,-26]},
  {ranvir:[4,0,-4],ananya:[-4,0,-4],anjali:[-3,0,-8]}
