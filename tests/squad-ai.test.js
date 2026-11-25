@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {SquadTactics} from "../src/squad-ai.js";
+const ai=new SquadTactics(),guards=[{position:{x:0,y:0,z:0}},{position:{x:1,y:0,z:0}},{position:{x:2,y:0,z:0}}];
+let result=ai.update("warehouse",guards,{alert:true,playerPosition:{x:10,y:0,z:5}});
+assert.equal(result.mode,"engage");
+assert.deepEqual(result.assignments.map(a=>a.role),["suppress","flank-left","flank-right"]);
+assert.notDeepEqual(result.assignments[1].target,result.assignments[2].target);
+result=ai.update("warehouse",guards,{alert:false,dt:1});
+assert.equal(result.mode,"search");
+assert.equal(result.assignments.every(a=>a.target!==null),true);
+ai.forget("warehouse");assert.equal(ai.update("warehouse",guards).mode,"patrol");
+assert.throws(()=>ai.update("",guards),TypeError);
+console.log("Squad tactics tests passed.");
