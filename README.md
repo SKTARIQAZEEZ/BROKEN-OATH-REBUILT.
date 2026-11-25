@@ -51,3 +51,14 @@ Story beats include directed camera shot types, dialogue captions, procedural fa
 `npm test` runs source checks, system tests, chapter progression simulation, cinematic coverage validation, environment construction/disposal checks and gameplay-system unit tests. `npm run test:e2e` runs Playwright desktop and mobile Chromium smoke tests against the production build, with external network requests blocked to verify offline bundling. GitHub Actions runs both suites before packaging.
 
 This is **not yet a production-complete game**. The current character art and environment geometry are procedural placeholders rather than realistic authored assets. Full facial rigs, mocap-quality clips, production animation, recorded voice acting, original score, complete SFX library, richer bespoke environments, physical mobile QA, full interactive 15-chapter browser playthroughs and production art/audio remain release gates. Passing automated tests does not prove those production requirements.
+
+
+## Combat and weapon controls
+
+- **1–4:** unarmed, baton, knife, heavy melee weapons.
+- **5–7:** service pistol, assault rifle, tactical shotgun.
+- **Right mouse button:** aim; **left mouse button:** fire while a firearm is equipped.
+- **R:** reload. The HUD shows magazine and reserve ammunition.
+- **Space:** melee attack when a melee weapon is equipped.
+- On touch devices, use **AIM**, **FIRE / ATTACK**, and **RELOAD**.
+- Firearms use weapon-specific fire rates, damage, range, spread, magazine sizes, reserve ammunition and reload times. Shots use camera-centred hit detection and environment line-of-sight checks.
