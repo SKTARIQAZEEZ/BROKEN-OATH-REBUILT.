@@ -8,8 +8,10 @@ export function createWeaponVisuals(actor){
  const knife=make("knife",[[new THREE.CylinderGeometry(.045,.05,.3,10),grip,0,.15,0],[new THREE.BoxGeometry(.055,.08,.09),brass,0,.33,0],[new THREE.ConeGeometry(.075,.42,4),steel,0,.57,0,Math.PI]]);
  const heavy=make("heavy",[[new THREE.CylinderGeometry(.07,.09,.5,12),grip,0,.25,0],[new THREE.CylinderGeometry(.14,.12,.48,8),dark,0,.72,0],[new THREE.TorusGeometry(.12,.025,6,12),brass,0,.49,0]]);
  const unarmed=new THREE.Group();unarmed.name="weapon-unarmed";mount.add(unarmed);
- const all={unarmed,baton,knife,heavy};
- function equip(name){if(!all[name])return false;for(const [key,obj] of Object.entries(all))obj.visible=key===name;mount.visible=name!=="unarmed";return true}
+ const all={unarmed,baton,knife,heavy};let equipped="unarmed",action="idle",elapsed=0;
+ function equip(name){if(!all[name])return false;equipped=name;for(const [key,obj] of Object.entries(all))obj.visible=key===name;mount.visible=name!=="unarmed";mount.rotation.set(0,0,0);return true}
+ function swing(){action="swing";elapsed=0;return equipped!=="unarmed"}
+ function update(dt){if(action==="idle")return;elapsed+=dt;const p=Math.min(1,elapsed/.34);mount.rotation.x=-Math.sin(p*Math.PI)*1.15;mount.rotation.z=Math.sin(p*Math.PI)*.38;if(p>=1){action="idle";mount.rotation.set(0,0,0)}}
  equip("unarmed");
- return {mount,equip,dispose(){actor.remove(mount);mount.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose()})}};
+ return {mount,equip,swing,update,get equipped(){return equipped},dispose(){actor.remove(mount);mount.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose()})}};
 }
