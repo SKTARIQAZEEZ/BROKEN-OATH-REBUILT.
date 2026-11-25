@@ -43,9 +43,12 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
   limbs.legs[0].rotation.x=swing;limbs.legs[1].rotation.x=-swing;
   limbs.arms[0].rotation.x=-swing*.7;limbs.arms[1].rotation.x=swing*.7;
   if(animation.name==="attack"){limbs.arms[0].rotation.x=-1.15;limbs.arms[0].rotation.z=-.35}
+  else if(animation.name==="counter"){limbs.arms[0].rotation.x=-1.25;limbs.arms[1].rotation.x=-1.05;limbs.arms[0].rotation.z=-.3;limbs.arms[1].rotation.z=.3}
+  else if(animation.name==="dodge"){root.rotation.z=Math.sin(animation.elapsed*18)*.16;limbs.legs[0].rotation.x=-.7;limbs.legs[1].rotation.x=.7;limbs.arms.forEach(a=>a.rotation.x=-.5)}
+  else if(animation.name==="finisher"){limbs.arms[0].rotation.x=-1.5;limbs.arms[0].rotation.z=-.55;root.rotation.x=-.08}
   else if(animation.name==="guard"){limbs.arms.forEach((a,i)=>{a.rotation.x=-.85;a.rotation.z=i===0?-.25:.25})}
   else if(animation.name==="hit"){headPivot.rotation.x=.22;limbs.arms[0].rotation.x=.6}
-  else {headPivot.rotation.x=Math.sin(time*1.4)*.025;limbs.arms.forEach(a=>a.rotation.z=0)}
+  else {root.rotation.z=0;root.rotation.x=0;headPivot.rotation.x=Math.sin(time*1.4)*.025;limbs.arms.forEach(a=>a.rotation.z=0)}
  }};
  return root;
 }
