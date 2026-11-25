@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
-import {CHAPTER_ENVIRONMENT_NAMES,CHAPTER_ENVIRONMENT_KINDS} from "../src/environments.js";
+import * as THREE from "three";
+import {CHAPTER_ENVIRONMENT_NAMES,CHAPTER_ENVIRONMENT_KINDS,buildChapterEnvironment} from "../src/environments.js";
 assert.equal(CHAPTER_ENVIRONMENT_NAMES.length,15);
 assert.equal(new Set(CHAPTER_ENVIRONMENT_NAMES).size,15);
 assert.equal(CHAPTER_ENVIRONMENT_KINDS.length,15);
 assert.ok(CHAPTER_ENVIRONMENT_KINDS.includes("warehouse"));
 assert.ok(CHAPTER_ENVIRONMENT_KINDS.includes("ceremony"));
-console.log("Environment manifest checks passed: 15 distinct chapter spaces and environment profiles.");
+const scene=new THREE.Scene();for(let i=0;i<15;i++){const env=buildChapterEnvironment(scene,i);assert.ok(env.group.children.length>0);assert.ok(env.colliders.every(c=>Number.isFinite(c.x)&&c.halfX>0));if(["warehouse","interior","fortress","compound","safehouse"].includes(env.kind))assert.ok(env.group.children.some(o=>o.name==="interior-floor"));env.dispose()}assert.equal(scene.children.length,0);
+console.log("Environment checks passed: 15 chapter spaces, furnished interiors and disposable collision geometry.");
