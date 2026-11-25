@@ -10,9 +10,10 @@ import {CinematicDirector} from "./cinematics.js";
 import {SaveSystem} from "./save-system.js";
 import {AudioDirector} from "./audio.js";
 import {resolveCircleAgainstAABBs} from "./collision.js";
+import {createMissionObject} from "./mission-objects.js";
 const $=s=>document.querySelector(s),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,260),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;$("#game").prepend(renderer.domElement);buildWorld(scene);
-let activeEnvironment=null,currentEnvironment=null;
+let activeEnvironment=null,currentEnvironment=null,activeMissionObject=null;
 function loadChapterEnvironment(index){if(currentEnvironment)currentEnvironment.dispose();currentEnvironment=buildChapterEnvironment(scene,index);activeEnvironment=currentEnvironment.group;}
 loadChapterEnvironment(0);
 const player=createCharacter(CHARACTER_PRESETS.azeez);player.position.copy(currentEnvironment.spawn);player.position.z-=3;scene.add(player);
@@ -26,7 +27,8 @@ const marker=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),new THREE.M
 let chapter=0,step=0,health=100,stamina=100,crouch=false,paused=false,attackCD=0,yaw=0,toastTime=0,dragX=null,nearby=false,alerted=false,survivalTime=0;
 const combat=new CombatSystem({range:3,damage:1}),stealth=new StealthSystem(),saves=new SaveSystem(),audio=new AudioDirector();
 const cinematics=new CinematicDirector({onCaption:(caption,speaker)=>{if(caption)say(caption,speaker||"STORY")}});
-const held={};const missionManager=new MissionManager(CAMPAIGN);const points=[[[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]];
+const held={};const missionManager=new MissionManager(CAMPAIGN);
+function refreshMissionObject(){if(activeMissionObject)activeMissionObject.dispose();const o=missionManager.objectiveData;if(!o)return;const anchor=currentEnvironment.objectiveAnchors[Math.min(missionManager.objective,currentEnvironment.objectiveAnchors.length-1)];activeMissionObject=createMissionObject(scene,o,anchor||new THREE.Vector3(0,.1,0));}const points=[[[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]];
 function target(){const anchor=currentEnvironment?.objectiveAnchors?.[Math.min(step,(currentEnvironment.objectiveAnchors.length-1))];const p=anchor?[anchor.x,anchor.z]:points[chapter][Math.min(step,points[chapter].length-1)];marker.position.set(p[0],.06,p[1]);ring.position.set(p[0],.13,p[1])}
 function hud(){$("#chapter").textContent="CHAPTER "+String(chapter+1).padStart(2,"0")+" · "+CAMPAIGN[chapter].title.toUpperCase();$("#objective").textContent=CAMPAIGN[chapter].objectives[step]?.label||"Chapter complete";$("#health").style.width=health+"%";$("#stamina").style.width=stamina+"%"}
 function toast(t){$("#toast").textContent=t;toastTime=2}
@@ -34,7 +36,7 @@ function save(){saves.save({chapter,step,health,mission:missionManager.snapshot(
 function load(){const s=saves.load();if(s){chapter=Math.max(0,Math.min(14,s.chapter|0));step=Math.max(0,Math.min(CAMPAIGN[chapter].objectives.length-1,s.step|0));health=s.health||100;if(s.mission)missionManager.restore(s.mission)}}
 function say(text,who="STORY"){paused=true;$("#speaker").textContent=who;$("#line").textContent=text;$("#dialogue").classList.remove("hide")}
 $("#next").onclick=()=>{$("#dialogue").classList.add("hide");paused=false};
-function advance(payload={}){const before=chapter;if(!missionManager.completeObjective(payload)){toast("OBJECTIVE REQUIREMENT NOT MET");return false}chapter=missionManager.chapter;step=missionManager.objective;if(chapter!==before){loadChapterEnvironment(chapter);player.position.copy(currentEnvironment.spawn);player.position.z-=3;alerted=false;survivalTime=0;say(CAMPAIGN[chapter].story,"CHAPTER "+String(chapter+1).padStart(2,"0"))}else if(missionManager.status==="complete"){say("Azeez: You actually kept your promise. Ranvir: We did. Together.","THE PROMISE FULFILLED")}missionManager.setCheckpoint({chapter,objective:step,player:{x:player.position.x,z:player.position.z}});target();hud();save();return true}
+function advance(payload={}){const before=chapter;if(!missionManager.completeObjective(payload)){toast("OBJECTIVE REQUIREMENT NOT MET");return false}chapter=missionManager.chapter;step=missionManager.objective;if(chapter!==before){loadChapterEnvironment(chapter);player.position.copy(currentEnvironment.spawn);player.position.z-=3;alerted=false;survivalTime=0;say(CAMPAIGN[chapter].story,"CHAPTER "+String(chapter+1).padStart(2,"0"))}else if(missionManager.status==="complete"){say("Azeez: You actually kept your promise. Ranvir: We did. Together.","THE PROMISE FULFILLED")}refreshMissionObject();missionManager.setCheckpoint({chapter,objective:step,player:{x:player.position.x,z:player.position.z}});target();hud();save();return true}
 function interact(){
  if(paused)return;audio.start();audio.playUI();
  const o=missionManager.objectiveData;if(!o)return;
@@ -46,12 +48,12 @@ function interact(){
   (o.target==="ranvir-final"&&a===ranvir)
  ));
  if(o.type==="rescue"){
-  const captive=o.target==="anjali"?anjali:ananya;
-  if(!near(captive)&&captive.visible===false&&player.position.distanceTo(marker.position)>3.1){toast("FIND THE HOLDING CELL");return}
-  captive.visible=true;missionManager.setFlag("rescued_"+o.target,true);advance({target:o.target});return;
+  if(player.position.distanceTo(activeMissionObject?.position||marker.position)>3.1){toast("FIND THE HOLDING CELL");return}
+  const captive=o.target==="anjali"?anjali:ananya;captive.visible=true;missionManager.setFlag("rescued_"+o.target,true);advance({target:o.target});return;
  }
  if(o.type==="interact"&&actor){advance({target:o.target});say(actor===ranvir?"Ranvir: You are late, brother.":actor===ananya?"Ananya: I kept waiting, even when it hurt.":actor===anjali?"Anjali: I won't let him take my son again.":"Devraj: You should have stayed away.",actor.name.toUpperCase());return}
  if(player.position.distanceTo(marker.position)<3.1){
+  if((o.type==="collect"||o.type==="evidence"||o.type==="interact")&&player.position.distanceTo(activeMissionObject?.position||marker.position)>3.1){toast("MOVE CLOSER TO THE OBJECT");return}
   const payload={};
   if(o.type==="reach")payload.zone=o.target;
   else if(o.type==="collect")payload.item=o.target;
@@ -76,4 +78,4 @@ function update(dt){if(paused)return;combat.update(dt);cinematics.update(dt);let
  for(let i=0;i<enemies.length;i++){const e=enemies[i];if(!e.visible)continue;const patrol=[[-12,-18],[-4,-18],[4,-18],[12,-18]][i%4];if(e.userData.patrolX===undefined){e.userData.patrolX=patrol[0];e.userData.patrolZ=patrol[1];e.userData.patrolDirection=1}if(!alerted){e.userData.patrolX+=e.userData.patrolDirection*dt*1.1;if(Math.abs(e.userData.patrolX-patrol[0])>3)e.userData.patrolDirection*=-1;e.position.x=e.userData.patrolX;e.position.z=e.userData.patrolZ;e.lookAt(e.position.x+e.userData.patrolDirection,0,e.position.z)}const awareness=stealth.evaluate(e,player,{crouched:crouch,moving:dir.lengthSq()>0});const d=awareness.distance;if(awareness.state==="combat"){alerted=true;e.userData.setAnimation("guard");e.lookAt(player.position);if(d<1.6){health=Math.max(0,health-9*dt);if(health===0){health=100;missionManager.retry();chapter=missionManager.chapter;step=missionManager.objective;const cp=missionManager.checkpoint;player.position.set(cp?.player?.x??0,0,cp?.player?.z??5);target();toast("DOWNED — CHECKPOINT RESTORED")}}}else if(awareness.state==="investigate"){e.userData.setAnimation("guard");e.lookAt(player.position);alerted=true}else{e.userData.setAnimation("idle")}}if(missionManager.objectiveData?.type==="survive"&&player.position.distanceTo(marker.position)<8)survivalTime+=dt;else if(missionManager.objectiveData?.type!=="survive")survivalTime=0;
  const camTarget=new THREE.Vector3(player.position.x+Math.sin(yaw)*9,6.2,player.position.z+Math.cos(yaw)*9);camera.position.lerp(camTarget,1-Math.pow(.001,dt));camera.lookAt(player.position.x,1,player.position.z);const close=player.position.distanceTo(marker.position)<3.2||[ranvir,ananya,anjali,devraj,...enemies].some(o=>o.visible&&o.position.distanceTo(player.position)<3.2);$("#prompt").classList.toggle("hide",!close);ring.rotation.z+=dt*.8;hud();if(toastTime>0){toastTime-=dt;if(toastTime<=0)$("#toast").textContent=""}}
 let last=performance.now();function loop(t){requestAnimationFrame(loop);const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);renderer.render(scene,camera)}addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6))});
-load();if(!saves.load()?.mission)missionManager.restore({schema:2,chapter,objective:step,status:"active",unlocked:Array.from({length:chapter+1},(_,i)=>i)});loadChapterEnvironment(chapter);target();hud();$("#loading").classList.add("hide");requestAnimationFrame(loop);
+load();if(!saves.load()?.mission)missionManager.restore({schema:2,chapter,objective:step,status:"active",unlocked:Array.from({length:chapter+1},(_,i)=>i)});loadChapterEnvironment(chapter);refreshMissionObject();target();hud();$("#loading").classList.add("hide");requestAnimationFrame(loop);
