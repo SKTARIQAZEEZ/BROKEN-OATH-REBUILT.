@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {encounterSize,encounterPositions,encounterComplete} from "../src/encounters.js";
+assert.equal(encounterSize("compound-guards"),4);
+assert.equal(encounterSize("devraj-lieutenant"),2);
+assert.equal(encounterSize("devraj"),1);
+assert.equal(encounterSize("ambush"),3);
+const points=encounterPositions({x:5,z:-2},4);
+assert.equal(points.length,4);
+assert.ok(points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.z)));
+const actors=[{userData:{dead:true}},{userData:{dead:false}}];
+assert.equal(encounterComplete(actors),false);
+actors[1].userData.dead=true;
+assert.equal(encounterComplete(actors),true);
+assert.equal(encounterComplete([]),false);
+console.log("Encounter tests passed: objective wave sizing, placement and clearance.");
