@@ -33,7 +33,7 @@
 - [x] Objective-specific enemy wave spawning and full-wave completion checks\n- [ ] Enemy group tactics, navigation and encounter balancing
 
 ### 5. Campaign production
-- [ ] Distinct mission scripts, encounter waves, checkpoints, story interactions and mission-specific mechanics for all chapters
+- [x] Chapter-specific cast visibility and placement for the story roster\n- [ ] Distinct mission scripts, encounter waves, checkpoints, story interactions and mission-specific mechanics for all chapters
 - [ ] Ranvir flashbacks in canon order; two distinct confrontations; warehouse rescue; final battle and wedding
 - [ ] Directed cinematics, dialogue branching and story-state continuity
 
