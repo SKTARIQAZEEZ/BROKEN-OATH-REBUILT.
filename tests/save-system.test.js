@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {SaveSystem} from "../src/save-system.js";
+import {readFile} from "node:fs/promises";
 
 const values=new Map();
 globalThis.localStorage={
@@ -23,6 +24,12 @@ assert.equal(saved.chapter,14);
 assert.equal(saved.step,0);
 assert.equal(saved.health,100);
 assert.equal(saves.load().schema,2);
+const positioned=saves.save({chapter:1,step:1,health:80,player:{x:45,z:-32},mission:{schema:2}});
+assert.deepEqual(positioned.player,{x:28,z:-28},"Saved player coordinates must stay inside world bounds");
+assert.deepEqual(saves.load().player,{x:28,z:-28},"Player position must survive save and restore");
+const main=await readFile(new URL("../src/main.js",import.meta.url),"utf8");
+assert.match(main,/player:\{x:player\.position\.x,z:player\.position\.z\}/,"Manual saves must capture the current player position");
+assert.match(main,/const savedPosition=s\.player\|\|s\.mission\?\.checkpoint\?\.player/,"Loading must restore the saved or checkpoint position");
 values.set(key,"{invalid json");
 assert.equal(saves.load(),null,"Corrupt saves should fail safely");
 values.set(key,JSON.stringify({schema:77,chapter:1,step:0,health:100}));
