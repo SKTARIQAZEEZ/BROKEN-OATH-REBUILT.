@@ -20,10 +20,10 @@ export function resolveCharacterClip(clips,requested){
  * A missing asset deliberately leaves the stand-in in place.
  */
 export function attachCharacterAsset(actor,url,{targetHeight=1.8,loader=new GLTFLoader()}={}){
- const state={status:"loading",url,mixer:null,actions:new Map(),activeAction:null,requested:"idle",clips:[]};
+ const state={status:"loading",url,mixer:null,actions:new Map(),activeAction:null,requested:"idle",clips:[],model:null,load:null};
  actor.userData.characterAsset=state;
  const originalAnimate=actor.userData.animate;
- loader.load(url,gltf=>{
+ const load=nextUrl=>{state.status="loading";state.url=nextUrl;loader.load(nextUrl,gltf=>{
   const model=gltf.scene;
   const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
   if(!Number.isFinite(size.y)||size.y<=0){state.status="error";state.error="GLB has no measurable model height";return}
