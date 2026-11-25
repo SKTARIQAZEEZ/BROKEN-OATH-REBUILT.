@@ -28,7 +28,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
    prop(group,new THREE.CylinderGeometry(.12,.17,8,8),wood,x,4,16,"utility-pole");
    for(let h=5.4;h<=6.4;h+=.5)prop(group,new THREE.BoxGeometry(1.4,.08,.08),metal,x,h,16,"crossarm");
   }
-  for(let i=0;i<3;i++)prop(group,new THREE.CylinderGeometry(.025,.025,48,6),rubber,0,6.1+i*.3,16,[ "overhead-wire"],[0,0,Math.PI/2]);
+  for(let i=0;i<3;i++)prop(group,new THREE.CylinderGeometry(.025,.025,48,6),rubber,0,6.1+i*.3,16,"overhead-wire",[0,0,Math.PI/2]);
   for(const [x,z] of [[-18,5],[17,8],[-10,-12],[12,-10]]){
    prop(group,new THREE.BoxGeometry(1.3,.8,.8),metal,x,.4,z,"street-bin");addCollider(x,z,1.3,.8,.8);
    prop(group,new THREE.BoxGeometry(2.4,.12,.7),wood,x+2,.8,z+2,"street-bench");
