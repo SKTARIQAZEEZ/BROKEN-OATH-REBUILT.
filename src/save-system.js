@@ -5,9 +5,9 @@ const clamp=(value,min,max,fallback)=>Number.isFinite(value)?Math.min(max,Math.m
 export class SaveSystem {
   save(state){
     const payload={
+      ...state,
       schema:SAVE_SCHEMA,
       updatedAt:new Date().toISOString(),
-      ...state,
       chapter:clamp(Number(state.chapter),0,14,0),
       step:clamp(Number(state.step),0,99,0),
       health:clamp(Number(state.health),0,100,100)
