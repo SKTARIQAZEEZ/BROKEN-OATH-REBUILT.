@@ -14,4 +14,5 @@ assert.match(source,/MISSION FAILED — RESTART THE CHAPTER TO TRY AGAIN/,"Missi
 assert.match(source,/if\(missionManager\.status===\"failed\"\)\{paused=true/,"A failed mission must not allow the player to resume a broken objective");
 assert.match(source,/e\.pointerType===\"touch\"\)\{dragX=e\.clientX/,"Touch users must be able to orbit the gameplay camera");
 assert.match(source,/addEventListener\(\"pointercancel\",stopCameraDrag\)/,"Camera drag must clean up when a touch is interrupted");
+assert.match(source,/if\(missionManager\.status===\"failed\"\)\{paused=true;\$\(\"#pauseMenu\"\)\.classList\.remove\(\"hide\"\)/,"A saved failed mission must reopen the retry menu after loading");
 console.log("Stealth encounter integration tests passed.");
