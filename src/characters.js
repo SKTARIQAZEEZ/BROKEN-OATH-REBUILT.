@@ -18,7 +18,7 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
  for(const x of [-1,1]){part(new THREE.SphereGeometry(.055*scale,8,8),skinMat,x*.265*scale,.17*scale,0,headPivot);part(new THREE.CapsuleGeometry(.045*scale,.18*scale,4,6),hairMat,x*.22*scale,.12*scale,-.03*scale,headPivot)}
  const limbs={legs:[],arms:[],feet:[],forearms:[],knees:[]};
  for(const x of [-1,1]){
-  const leg=new THREE.Group();leg.position.set(x*.17*scale,.72*scale,0);part(new THREE.CapsuleGeometry(.13*scale,.48*scale,5,8),pantsMat,0,-.28*scale,0,leg);const knee=part(new THREE.SphereGeometry(.105*scale,10,8),pantsMat,0,-.48*scale,-.015*scale,leg);limbs.knees.push(knee);const shin=part(new THREE.CapsuleGeometry(.105*scale,.34*scale,4,8),pantsMat,0,-.62*scale,0,leg);root.add(leg);limbs.legs.push(leg);
+  const leg=new THREE.Group();leg.position.set(x*.17*scale,.72*scale,0);part(new THREE.CapsuleGeometry(.13*scale,.48*scale,5,8),pantsMat,0,-.28*scale,0,leg);const knee=new THREE.Group();knee.position.set(0,-.48*scale,0);part(new THREE.SphereGeometry(.105*scale,10,8),pantsMat,0,0,-.015*scale,knee);part(new THREE.CapsuleGeometry(.105*scale,.34*scale,4,8),pantsMat,0,-.2*scale,0,knee);leg.add(knee);limbs.knees.push(knee);root.add(leg);limbs.legs.push(leg);
   part(new THREE.BoxGeometry(.22*scale,.12*scale,.36*scale),shoeMat,x*.17*scale,.08*scale,-.09*scale,root);
   const arm=new THREE.Group();arm.position.set(x*.46*scale,1.45*scale,0);
   part(new THREE.CapsuleGeometry(.105*scale,.42*scale,5,8),shirtMat,0,-.22*scale,0,arm);
