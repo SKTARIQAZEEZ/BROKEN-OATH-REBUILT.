@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import {dressCharacter} from "./character-detail.js";
+import {createSurfaceMaterial} from "./material-library.js";
 const mat=(c,r=.75,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 function part(geo,material,x,y,z,parent){const o=new THREE.Mesh(geo,material);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98745d,hair=0x211b18,scale=1,role="civilian",accent=0x8b765d}={}){
  const root=new THREE.Group();root.name=name;
- const skinMat=mat(skin),shirtMat=mat(shirt),pantsMat=mat(trousers),hairMat=mat(hair),shoeMat=mat(0x17191c),accentMat=mat(accent,.55);
+ const skinMat=mat(skin),shirtMat=createSurfaceMaterial("fabric",{color:shirt,seed:name.length+1}),pantsMat=createSurfaceMaterial("fabric",{color:trousers,seed:name.length+9}),hairMat=mat(hair),shoeMat=mat(0x17191c),accentMat=mat(accent,.55);
  const torso=part(new THREE.CapsuleGeometry(.39*scale,.78*scale,6,12),shirtMat,0,1.12*scale,0,root);
  const neck=part(new THREE.CylinderGeometry(.105*scale,.12*scale,.2*scale,10),skinMat,0,1.72*scale,0,root);
  const headPivot=new THREE.Group();headPivot.position.set(0,1.78*scale,0);root.add(headPivot);
