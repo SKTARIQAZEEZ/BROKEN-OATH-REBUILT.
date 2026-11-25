@@ -8,6 +8,8 @@ Install dependencies with `npm install`, then run `npm run dev` and open the loc
 
 ## Controls
 
+- **V**: Enter or exit a nearby vehicle. While driving, use **WASD** to accelerate, reverse and steer; the camera follows the vehicle and the speed HUD shows km/h. Touch users can use the **VEHICLE** action button.
+
 - **WASD / arrow keys:** move
 - **Mouse drag / touch drag on the world:** orbit camera
 - **E:** interact with mission objects and nearby characters
