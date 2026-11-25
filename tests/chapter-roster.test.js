@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {chapterRoster,applyChapterRoster} from "../src/chapter-roster.js";
-assert.equal(Object.keys(chapterRoster(0)).sort().join(","),"ananya,ranvir");
+assert.equal(Object.keys(chapterRoster(0)).sort().join(","),"ananya,anjali,ranvir");
 assert.ok(chapterRoster(9).ananya);
 assert.ok(chapterRoster(9).anjali);
 assert.ok(chapterRoster(13).devraj);
