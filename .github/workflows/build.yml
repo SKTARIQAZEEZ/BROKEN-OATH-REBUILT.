@@ -1,0 +1,26 @@
+name: Build and package BROKEN OATH
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  verify-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Run syntax and campaign checks
+        run: npm test
+      - name: Create game ZIP
+        run: |
+          zip -r BROKEN_OATH_COMPLETE_GAME.zip index.html style.css src docs README.md package.json tests
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BROKEN_OATH_COMPLETE_GAME
+          path: BROKEN_OATH_COMPLETE_GAME.zip
+          if-no-files-found: error
