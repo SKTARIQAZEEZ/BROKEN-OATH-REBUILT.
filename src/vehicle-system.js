@@ -77,17 +77,24 @@ export class VehicleSystem{
   if(Math.abs(this.speed)<.08)this.speed=0;
   const steerScale=Math.min(1,Math.abs(this.speed)/3);
   this.yaw+=steer*steerScale*Math.sign(this.speed||1)*1.55*dt;
-  const old=this.vehicle.position.clone();
-  this.vehicle.position.x+=Math.sin(this.yaw)*this.speed*dt;
-  this.vehicle.position.z-=Math.cos(this.yaw)*this.speed*dt;
-  this.vehicle.position.x=THREE.MathUtils.clamp(this.vehicle.position.x,-26,26);
-  this.vehicle.position.z=THREE.MathUtils.clamp(this.vehicle.position.z,-26,26);
-  const probe={x:this.vehicle.position.x,z:this.vehicle.position.z};
-  for(const c of this.environment.colliders){
-   if(c===this.collider)continue;
-   const minX=c.x-c.halfX-1.05,maxX=c.x+c.halfX+1.05,minZ=c.z-c.halfZ-1.95,maxZ=c.z+c.halfZ+1.95;
-   if(probe.x>minX&&probe.x<maxX&&probe.z>minZ&&probe.z<maxZ){this.vehicle.position.copy(old);this.speed=0;this.onMessage("VEHICLE COLLISION");break}
+  const travel=this.speed*dt,steps=Math.max(1,Math.ceil(Math.abs(travel)/.4)),stepTravel=travel/steps;
+  let collided=false;
+  // Sub-step movement prevents fast vehicles tunnelling through thin walls, crates or barriers.
+  for(let step=0;step<steps;step++){
+   const old=this.vehicle.position.clone();
+   this.vehicle.position.x+=Math.sin(this.yaw)*stepTravel;
+   this.vehicle.position.z-=Math.cos(this.yaw)*stepTravel;
+   this.vehicle.position.x=THREE.MathUtils.clamp(this.vehicle.position.x,-26,26);
+   this.vehicle.position.z=THREE.MathUtils.clamp(this.vehicle.position.z,-26,26);
+   const probe={x:this.vehicle.position.x,z:this.vehicle.position.z};
+   for(const c of this.environment.colliders){
+    if(c===this.collider)continue;
+    const minX=c.x-c.halfX-1.05,maxX=c.x+c.halfX+1.05,minZ=c.z-c.halfZ-1.95,maxZ=c.z+c.halfZ+1.95;
+    if(probe.x>minX&&probe.x<maxX&&probe.z>minZ&&probe.z<maxZ){this.vehicle.position.copy(old);this.speed=0;collided=true;break}
+   }
+   if(collided)break;
   }
+  if(collided)this.onMessage("VEHICLE COLLISION");
   if(this.collider){this.collider.x=this.vehicle.position.x;this.collider.z=this.vehicle.position.z;}
   this.vehicle.rotation.y=this.yaw;for(const wheel of this.vehicle.userData.wheels)wheel.rotation.x-=this.speed*dt*1.8;
   this.vehicle.userData.speed=this.speed;if(player)player.position.copy(this.vehicle.position);
