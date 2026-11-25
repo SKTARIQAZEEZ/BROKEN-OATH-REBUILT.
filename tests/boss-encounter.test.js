@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {BossEncounter} from "../src/boss-encounter.js";
+let phases=0,defeats=0;
+const boss=new BossEncounter({onPhase:()=>phases++,onDefeat:()=>defeats++});
+assert.equal(boss.update(.01).state,"telegraph");
+assert.equal(boss.update(2).state,"attack");
+assert.equal(boss.consumeAttack(),8);
+boss.receiveDamage(60);assert.equal(boss.phase.name,"enraged");assert.equal(phases,1);
+boss.receiveDamage(45);assert.equal(boss.defeated,true);assert.equal(defeats,1);
+assert.equal(boss.update(1).state,"defeated");boss.reset();assert.equal(boss.health,100);
+console.log("Boss phase tests passed.");
