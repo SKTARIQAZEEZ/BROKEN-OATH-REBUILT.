@@ -18,9 +18,13 @@ jobs:
         run: npm test
       - name: Build self-contained browser bundle
         run: npm run build
+      - name: Install Chromium for browser QA
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop and mobile browser smoke tests
+        run: npm run test:e2e
       - name: Create game ZIP
         run: |
-          zip -r BROKEN_OATH_COMPLETE_GAME.zip dist src docs README.md package.json tests
+          zip -r BROKEN_OATH_COMPLETE_GAME.zip dist src docs README.md package.json package-lock.json playwright.config.js tests
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
