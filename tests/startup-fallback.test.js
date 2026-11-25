@@ -7,4 +7,7 @@ assert.match(html,/WORLD INITIALIZATION FAILED/,"The player must see a useful st
 assert.match(html,/RELOAD GAME/,"The startup error must provide a recovery action");
 assert.match(html,/setAttribute\("aria-live","assertive"\)/,"Startup errors must be announced to assistive technology");
 assert.match(css,/#loading\.load-error/,"The recovery screen must have dedicated readable styling");
+assert.match(html,/aria-label=\"Pause game\"/,"Pause control must have an accessible label");
+assert.match(html,/id=\"toast\" role=\"status\" aria-live=\"polite\"/,"Gameplay messages must be announced accessibly");
+assert.match(html,/id=\"dialogue\" class=\"hide\" role=\"dialog\"/,"Story dialogue must expose dialog semantics");
 console.log("Startup recovery screen tests passed.");
