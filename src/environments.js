@@ -40,7 +40,7 @@ export function buildChapterEnvironment(scene,index){
   for(let x=-8;x<=8;x+=4){mesh(new THREE.CylinderGeometry(.13,.13,5,10),material(0x8c795f),x,2.5,-12,group,"ceremony-pillar");mesh(new THREE.SphereGeometry(.7,12,10),material(0x9b744f),x,5.3,-12,group,"floral-decoration")}
   mesh(new THREE.BoxGeometry(10,.4,4),material(0x76563e),0,.2,-18,group,"wedding-stage");
  }else{
-  for(let x=-22;x<=22;x+=11){addBuilding(x,-21,8,9+(Math.abs(x)%3)*2,7,"street-building");addBuilding(x,21,8,8,7,"street-building")}
+  if(!["homes","safehouse","street"].includes(kind))for(let x=-22;x<=22;x+=11){addBuilding(x,-21,8,9+(Math.abs(x)%3)*2,7,"street-building");addBuilding(x,21,8,8,7,"street-building")}
   for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12)}
   if(kind==="interior"){for(let z=-15;z<=12;z+=5)for(let x of [-10,10])addCover(x,z,2,2.4,1,"archive-shelf")}
  }
@@ -48,7 +48,7 @@ export function buildChapterEnvironment(scene,index){
   // Recognizable residential facades: pitched roof silhouette, recessed entry, porch and ground-floor windows.
   const houseXs=kind==="street"?[-18,0,18]:[-18,18];
   for(let i=0;i<houseXs.length;i++){
-   const x=houseXs[i],z=kind==="street"?-9+(i%2)*18:kind==="homes"?-17: -17;
+   const x=houseXs[i],z=kind==="street"?-9+(i%2)*18:0;
    const w=7.4,d=6.2,h=5.8;
    const facade=mesh(new THREE.BoxGeometry(w,h,d),createSurfaceMaterial("concrete",{color:i%2?0x4b4944:0x5a5147,seed:index*17+i}),x,h/2,z,group,"residential-house");
    colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});
