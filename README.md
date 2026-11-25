@@ -4,7 +4,7 @@ A clean-room third-person 3D action-adventure development line. It does not depe
 
 ## Run locally
 
-Serve this directory over HTTP (ES modules require a local server), then open `http://localhost:8000`. Example: `python -m http.server 8000`.
+Install dependencies with `npm install`, then run `npm run dev` and open the local Vite URL. For a production bundle, run `npm run build`; the generated `dist/` directory includes the Three.js runtime and does not require a CDN. You can serve `dist/` with any static HTTP server (for example, `cd dist && python -m http.server 8000`).
 
 ## Controls
 
@@ -40,6 +40,6 @@ Story beats include directed camera shot types, dialogue captions, procedural fa
 
 ## Verification and known production gaps
 
-`npm test` runs source checks, system tests, chapter progression simulation, cinematic coverage validation, environment construction/disposal checks and gameplay-system unit tests. GitHub Actions runs the same verification.
+`npm test` runs source checks, system tests, chapter progression simulation, cinematic coverage validation, environment construction/disposal checks and gameplay-system unit tests. `npm run test:e2e` runs Playwright desktop and mobile Chromium smoke tests against the production build, with external network requests blocked to verify offline bundling. GitHub Actions runs both suites before packaging.
 
-This is **not yet a production-complete game**. The current character art and environment geometry are procedural placeholders rather than realistic authored assets. Full facial rigs, mocap-quality clips, production animation, recorded voice acting, original score, complete SFX library, richer bespoke environments, physical mobile QA and full interactive browser playthroughs remain release gates. Passing automated tests does not prove those production requirements.
+This is **not yet a production-complete game**. The current character art and environment geometry are procedural placeholders rather than realistic authored assets. Full facial rigs, mocap-quality clips, production animation, recorded voice acting, original score, complete SFX library, richer bespoke environments, physical mobile QA, full interactive 15-chapter browser playthroughs and production art/audio remain release gates. Passing automated tests does not prove those production requirements.
