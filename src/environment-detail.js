@@ -18,17 +18,17 @@ export function decorateEnvironment(group,kind,colliders=[]){
    for(let z=-22;z<=18;z+=10)prop(group,new THREE.BoxGeometry(.6,.08,.3),warning,x,4.5,z,"hazard-stripe");
   }
   for(let z=-18;z<=18;z+=12){
-   prop(group,new THREE.CylinderGeometry(.55,.55,1.25,12),rust,-20,.63,z,"oil-drum");
-   prop(group,new THREE.CylinderGeometry(.55,.55,1.25,12),metal,20,.63,z,"steel-drum");
+   prop(group,new THREE.CylinderGeometry(.55,.55,1.25,12),rust,-20,.63,z,"oil-drum");addCollider(-20,z,1.15,1.15,1.25);
+   prop(group,new THREE.CylinderGeometry(.55,.55,1.25,12),metal,20,.63,z,"steel-drum");addCollider(20,z,1.15,1.15,1.25);
    prop(group,new THREE.BoxGeometry(1.7,.16,1.25),wood,-14,.12,z+2,"wooden-pallet");
    prop(group,new THREE.BoxGeometry(1.6,1.5,1.2),wood,-14,.9,z+2,"shipping-crate");addCollider(-14,z+2,1.6,1.2,1.5);
   }
-  for(const x of [-22,22]){prop(group,new THREE.BoxGeometry(.25,5,.25),metal,x,2.5,-24,"support-column");prop(group,new THREE.BoxGeometry(1.2,.18,.8),warning,x,4.5,-23.8,"warning-sign");}
+  for(const x of [-22,22]){prop(group,new THREE.BoxGeometry(.25,5,.25),metal,x,2.5,-24,"support-column");addCollider(x,-24,.3,.3,5);prop(group,new THREE.BoxGeometry(1.2,.18,.8),warning,x,4.5,-23.8,"warning-sign");}
   for(const x of [-16,0,16]){prop(group,new THREE.BoxGeometry(3,.35,.4),concrete,x,.18,14,"concrete-barricade");addCollider(x,14,3,.4,.35)}
  }else if(["street","homes","safehouse","sports","rooftop"].includes(kind)){
   // Power poles and sagging cables establish a lived-in neighbourhood silhouette.
   for(const x of [-23,-7,9,23]){
-   prop(group,new THREE.CylinderGeometry(.12,.17,8,8),wood,x,4,16,"utility-pole");
+   prop(group,new THREE.CylinderGeometry(.12,.17,8,8),wood,x,4,16,"utility-pole");addCollider(x,16,.35,.35,8);
    for(let h=5.4;h<=6.4;h+=.5)prop(group,new THREE.BoxGeometry(1.4,.08,.08),metal,x,h,16,"crossarm");
   }
   for(let i=0;i<3;i++)prop(group,new THREE.CylinderGeometry(.025,.025,48,6),rubber,0,6.1+i*.3,16,"overhead-wire",[0,0,Math.PI/2]);
@@ -45,7 +45,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
  }else if(kind==="ceremony"){
   // Restrained warm practicals: the wedding remains cinematic, not brightly saturated.
   for(let x=-9;x<=9;x+=3){light(group,x,4.8,-12,0xe0ad72,1.1,6);prop(group,new THREE.SphereGeometry(.12,10,8),warning,x,4.8,-12,"warm-string-light")}
-  for(const x of [-10,10])for(const z of [-15,-7]){prop(group,new THREE.CylinderGeometry(.75,.85,.7,12),wood,x,.35,z,"ceremony-planter");prop(group,new THREE.SphereGeometry(.7,12,8),warning,x,1,z,"flower-arrangement")}
+  for(const x of [-10,10])for(const z of [-15,-7]){prop(group,new THREE.CylinderGeometry(.75,.85,.7,12),wood,x,.35,z,"ceremony-planter");addCollider(x,z,1.6,1.6,.7);prop(group,new THREE.SphereGeometry(.7,12,8),warning,x,1,z,"flower-arrangement")}
  }else if(kind==="investigation"){
   // Azeez returns to a damaged home district: evidence is staged as physical scene detail.
   for(let i=0;i<8;i++){const x=-15+(i%4)*10,z=-12+Math.floor(i/4)*13;prop(group,new THREE.ConeGeometry(.16,.42,6),warning,x,.21,z,"evidence-marker");prop(group,new THREE.BoxGeometry(.55,.08,.4),glass,x,.46,z,"evidence-tray");addCollider(x,z,.6,.5,.5)}
@@ -62,7 +62,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
  if(kind==="rooftop"){
   for(const [x,z] of [[-15,-10],[13,-12]]){prop(group,new THREE.CylinderGeometry(1.35,1.45,2.2,16),metal,x,1.1,z,"rooftop-water-tank");addCollider(x,z,2.8,2.8,2.2)}
   for(const [x,z] of [[-7,8],[8,10]]){prop(group,new THREE.BoxGeometry(2.4,1.1,1.6),metal,x,.55,z,"rooftop-hvac");addCollider(x,z,2.4,1.6,1.1)}
-  prop(group,new THREE.CylinderGeometry(.9,.9,.08,16),glass,18,2.4,-2,"satellite-dish",[.35,0,0]);
+  prop(group,new THREE.CylinderGeometry(.9,.9,.08,16),glass,18,2.4,-2,"satellite-dish",[.35,0,0]);addCollider(18,-2,1.8,1.8,2.5);
   for(let i=0;i<4;i++)prop(group,new THREE.CylinderGeometry(.018,.018,34,5),rubber,-17+i*.35,3.8,12,"rooftop-clothesline",[0,0,Math.PI/2]);
  }
  if(kind==="interior"||kind==="safehouse"){
