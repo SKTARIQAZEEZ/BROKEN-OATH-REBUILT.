@@ -10,7 +10,8 @@ export class SaveSystem {
       updatedAt:new Date().toISOString(),
       chapter:clamp(Number(state.chapter),0,14,0),
       step:clamp(Number(state.step),0,99,0),
-      health:clamp(Number(state.health),0,100,100)
+      health:clamp(Number(state.health),0,100,100),
+      player:state.player&&Number.isFinite(Number(state.player.x))&&Number.isFinite(Number(state.player.z))?{x:clamp(Number(state.player.x),-28,28,0),z:clamp(Number(state.player.z),-28,28,0)}:null
     };
     localStorage.setItem(SAVE_KEY,JSON.stringify(payload));
     return payload;
@@ -30,6 +31,7 @@ export class SaveSystem {
         chapter:clamp(Number(data.chapter),0,14,0),
         step:clamp(Number(data.step),0,99,0),
         health:clamp(Number(data.health),0,100,100),
+        player:data.player&&Number.isFinite(Number(data.player.x))&&Number.isFinite(Number(data.player.z))?{x:clamp(Number(data.player.x),-28,28,0),z:clamp(Number(data.player.z),-28,28,0)}:null,
         mission
       };
     }catch{return null}
