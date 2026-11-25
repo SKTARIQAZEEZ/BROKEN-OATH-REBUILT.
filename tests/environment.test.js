@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import {CHAPTER_ENVIRONMENT_NAMES,CHAPTER_ENVIRONMENT_KINDS,buildChapterEnvironment} from "../src/environments.js";
+import {buildWorld} from "../src/world.js";
 assert.equal(CHAPTER_ENVIRONMENT_NAMES.length,15);
 assert.equal(new Set(CHAPTER_ENVIRONMENT_NAMES).size,15);
 assert.equal(CHAPTER_ENVIRONMENT_KINDS.length,15);
@@ -13,4 +14,10 @@ const scene=new THREE.Scene();for(let i=0;i<15;i++){const env=buildChapterEnviro
 if(env.kind==="investigation")assert.ok(env.group.children.some(o=>o.name==="evidence-marker"),"Investigation districts need physical evidence staging");
 if(env.kind==="arena")assert.ok(env.group.children.some(o=>o.name==="punching-bag"),"Memory arenas need training props");
 if(env.kind==="rooftop")assert.ok(env.group.children.some(o=>o.name==="rooftop-water-tank"),"Rooftops need recognizable rooftop equipment");env.dispose()}assert.equal(scene.children.length,0);
+const mobileScene=new THREE.Scene();buildWorld(mobileScene,{mobile:true});
+const mobileSun=mobileScene.children.find(o=>o.isDirectionalLight);
+assert.equal(mobileSun.shadow.mapSize.width,1024,"Mobile should use a lighter shadow map");
+const desktopScene=new THREE.Scene();buildWorld(desktopScene,{mobile:false});
+const desktopSun=desktopScene.children.find(o=>o.isDirectionalLight);
+assert.equal(desktopSun.shadow.mapSize.width,2048,"Desktop should retain higher shadow quality");
 console.log("Environment checks passed: 15 chapter spaces, furnished interiors and disposable collision geometry.");
