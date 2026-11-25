@@ -99,5 +99,5 @@ export class VehicleSystem{
   this.vehicle.rotation.y=this.yaw;for(const wheel of this.vehicle.userData.wheels)wheel.rotation.x-=this.speed*dt*1.8;
   this.vehicle.userData.speed=this.speed;if(player)player.position.copy(this.vehicle.position);
  }
- dispose(){this.exit(false);if(this.vehicle)this.scene.remove(this.vehicle);this.vehicle=null;}
+ dispose(){this.exit(false);if(this.environment&&this.collider)this.environment.colliders=this.environment.colliders.filter(c=>c!==this.collider);if(this.vehicle){this.scene.remove(this.vehicle);this.vehicle.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}})}this.vehicle=null;this.collider=null;this.environment=null;}
 }
