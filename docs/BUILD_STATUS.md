@@ -9,6 +9,9 @@
 - Melee combat profiles, visible baton/knife/heavy meshes, equipment switching, swing animation, counters, dodge, block, finishers and phased Devraj boss encounter.
 - Guard vision/hearing/search/alarm, A* investigation movement, squad suppress/flank/search roles, reserved cover-seeking, sound propagation and distraction.
 - Procedural ambience, gameplay cues and adaptive original synthesized score themes for memory, tension, danger, reunion and finale.
+- Stealth infiltration objectives spawn active guards at the mission site; survival objectives create encounter pressure; mission failure opens an explicit retry state.
+- Chapter 10 captives remain hidden until rescued; investigation, memory-arena and rooftop spaces have dedicated set dressing.
+- Mobile touch-drag camera orbit, mobile-aware rendering/shadows, startup error recovery and schema-1-to-schema-2 save migration are covered by regression tests.
 - Automated tests cover campaign progression, systems, chapter environments, character rig APIs, cinematic lifecycle, PBR texture determinism, squad cover assignments and weapon visuals.
 - GitHub Actions validates the project and packages a ZIP artifact.
 
