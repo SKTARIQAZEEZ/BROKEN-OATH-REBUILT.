@@ -12,4 +12,6 @@ assert.match(source,/e\.userData\.patrolX=positions\[i\]\.x;e\.userData\.patrolZ
 assert.match(source,/else if\(o\.type===\"survive\"\)\{const count=o\.target===\"training\"\?2:3/,"Survival objectives must create active combat pressure");
 assert.match(source,/MISSION FAILED — RESTART THE CHAPTER TO TRY AGAIN/,"Mission failure must tell the player how to recover");
 assert.match(source,/if\(missionManager\.status===\"failed\"\)\{paused=true/,"A failed mission must not allow the player to resume a broken objective");
+assert.match(source,/e\.pointerType===\"touch\"\)\{dragX=e\.clientX/,"Touch users must be able to orbit the gameplay camera");
+assert.match(source,/addEventListener\(\"pointercancel\",stopCameraDrag\)/,"Camera drag must clean up when a touch is interrupted");
 console.log("Stealth encounter integration tests passed.");
