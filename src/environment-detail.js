@@ -39,7 +39,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
  }else if(kind==="ruins"){
   for(let i=0;i<24;i++){
    const x=-20+(i*7%40),z=-20+(i*11%38),h=.15+(i%4)*.12;
-   prop(group,new THREE.DodecahedronGeometry(.35+(i%3)*.12,0),i%3?concrete:rust,x,h/2,z,"burned-masonry");
+   prop(group,new THREE.DodecahedronGeometry(.35+(i%3)*.12,0),i%3?concrete:rust,x,h/2,z,"burned-masonry");addCollider(x,z,.8,.8,h);
   }
   for(const x of [-13,13]){prop(group,new THREE.BoxGeometry(.3,3,.3),rust,x,1.5,-12,"charred-beam",[0,0,x<0?-.18:.18]);prop(group,new THREE.ConeGeometry(.35,1.2,7),rubber,x,.6,-10,"ash-pile")}
  }else if(kind==="ceremony"){
@@ -57,7 +57,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
   for(const x of [-10,10]){prop(group,new THREE.BoxGeometry(3,.18,.8),wood,x,.45,-8,"training-bench");addCollider(x,-8,3,.8,.9);prop(group,new THREE.CylinderGeometry(.32,.38,1.8,12),rubber,x,1.2,3,"punching-bag");addCollider(x,3,.8,.8,2.4);prop(group,new THREE.CylinderGeometry(.06,.06,2.1,8),metal,x,2.5,3,"bag-chain")}
   for(let i=0;i<6;i++){const x=-12+i*4;prop(group,new THREE.BoxGeometry(1.2,.55,.8),wood,x,.275,12,"training-sandbag");addCollider(x,12,1.2,.8,.55)}
   prop(group,new THREE.TorusGeometry(5,.07,8,48),warning,0,.08,-2,"sparring-circle").rotation.x=Math.PI/2;
-  for(const x of [-14,14]){prop(group,new THREE.BoxGeometry(.18,2.4,.18),metal,x,1.2,-19,"goal-post");prop(group,new THREE.BoxGeometry(2.8,.16,.18),metal,x,2.35,-19,"goal-crossbar")}
+  for(const x of [-14,14]){prop(group,new THREE.BoxGeometry(.18,2.4,.18),metal,x,1.2,-19,"goal-post");addCollider(x,-19,.2,.2,2.4);prop(group,new THREE.BoxGeometry(2.8,.16,.18),metal,x,2.35,-19,"goal-crossbar")}
  }
  if(kind==="rooftop"){
   for(const [x,z] of [[-15,-10],[13,-12]]){prop(group,new THREE.CylinderGeometry(1.35,1.45,2.2,16),metal,x,1.1,z,"rooftop-water-tank");addCollider(x,z,2.8,2.8,2.2)}
@@ -66,7 +66,7 @@ export function decorateEnvironment(group,kind,colliders=[]){
   for(let i=0;i<4;i++)prop(group,new THREE.CylinderGeometry(.018,.018,34,5),rubber,-17+i*.35,3.8,12,"rooftop-clothesline",[0,0,Math.PI/2]);
  }
  if(kind==="interior"||kind==="safehouse"){
-  for(const x of [-18,18])for(const z of [-16,-6,4,14]){prop(group,new THREE.BoxGeometry(.12,3,.12),metal,x,1.5,z,"interior-column");light(group,x,2.8,z,0xc99b67,.8,5)}
+  for(const x of [-18,18])for(const z of [-16,-6,4,14]){prop(group,new THREE.BoxGeometry(.12,3,.12),metal,x,1.5,z,"interior-column");addCollider(x,z,.18,.18,3);light(group,x,2.8,z,0xc99b67,.8,5)}
  }
  return {props:group.children.filter(o=>o.name&&!["walkable-ground"].includes(o.name)).length};
 }
