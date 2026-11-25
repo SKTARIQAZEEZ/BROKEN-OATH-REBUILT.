@@ -5,7 +5,7 @@ export function buildWorld(scene,{mobile=false}={}){
  scene.add(new THREE.HemisphereLight(0x8b9cac,0x18120e,1.25));
  const sun=new THREE.DirectionalLight(0xe5d5bc,2);sun.position.set(-25,35,20);sun.castShadow=true;sun.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);scene.add(sun);
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(220,220),mat(0x292e30));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
- const grid=new THREE.GridHelper(220,70,0x43494a,0x333a3c);grid.position.y=.01;scene.add(grid);
+ const grid=new THREE.GridHelper(220,70,0x43494a,0x333a3c);grid.position.y=.01;grid.material.transparent=true;grid.material.opacity=.12;grid.material.depthWrite=false;scene.add(grid);
  function block(x,z,w,h,d,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,h/2,z);m.castShadow=true;m.receiveShadow=true;scene.add(m);for(let y=2.5;y<h-1;y+=3)for(let xx=-w/2+1;xx<w/2-1;xx+=2.7){const win=new THREE.Mesh(new THREE.BoxGeometry(.95,1.15,.07),mat(0x1a2a35));win.position.set(x+xx,y,z-d/2-.05);scene.add(win)}}
  for(let i=0;i<9;i++){block(-28+i*7,-25,5,8+(i%3)*3,7,0x343a3e);block(-28+i*7,27,5,7+(i%4)*2,7,0x2c3338)}
  for(let i=0;i<6;i++){block(-35,-15+i*7,7,10,5,0x343a3e);block(35,-15+i*7,7,9+(i%2)*4,5,0x30363a)}
