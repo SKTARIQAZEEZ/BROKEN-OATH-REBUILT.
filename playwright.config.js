@@ -4,7 +4,7 @@ export default defineConfig({
  fullyParallel:true,
  reporter:"list",
  timeout:30000,
- use:{baseURL:"http://127.0.0.1:4173",trace:"retain-on-failure"},
+ use:{baseURL:"http://127.0.0.1:4173",trace:"retain-on-failure",launchOptions:{args:["--use-gl=angle","--use-angle=swiftshader","--enable-webgl","--ignore-gpu-blocklist","--disable-dev-shm-usage"]}},
  projects:[
   {name:"desktop-chromium",use:{...devices["Desktop Chrome"]}},
   {name:"mobile-chromium",use:{...devices["iPhone 13"],browserName:"chromium"}}
