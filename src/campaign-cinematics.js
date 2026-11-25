@@ -71,7 +71,6 @@ export const STORY_CINEMATICS={
   {speaker:"DEVRAJ",shot:"confrontation",caption:"You should have stayed my weapon.",duration:2.4},
   {speaker:"RANVIR",shot:"overShoulder",caption:"I am not yours.",duration:2.2},
   {speaker:"DEVRAJ",shot:"close",caption:"Then die beside the family you chose.",duration:2.6},
-  {speaker:"ANJALI",shot:"close",caption:"I spent years being afraid of you. I won't let you take my son from me again.",duration:4.2}
  ],
  CH15_PROMISE:[
   {speaker:"AZEEZ",shot:"close",caption:"You actually kept your promise.",duration:2.8},
