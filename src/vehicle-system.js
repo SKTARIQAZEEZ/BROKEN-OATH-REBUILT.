@@ -51,12 +51,12 @@ export class VehicleSystem{
   if(!this.vehicle)return {ok:false,reason:"no-vehicle"};
   if(this.driving){this.exit(true,player);return {ok:true,driving:false}}
   if(player.position.distanceTo(this.vehicle.position)>4.2)return {ok:false,reason:"too-far"};
-  this.driving=true;this.playerRef=player;this.speed=0;this.environment.colliders=this.environment.colliders.filter(c=>c!==this.collider);player.visible=false;this.onMessage("VEHICLE ENTERED · WASD TO DRIVE · V TO EXIT");return {ok:true,driving:true};
+  this.driving=true;this.playerRef=player;this.speed=0;player.visible=false;this.onMessage("VEHICLE ENTERED · WASD TO DRIVE · V TO EXIT");return {ok:true,driving:true};
  }
  exit(showMessage=true,player=this.playerRef){
   if(!this.driving)return false;
   this.driving=false;this.speed=0;
-  if(this.collider&&this.environment&&!this.environment.colliders.includes(this.collider))this.environment.colliders.push(this.collider);
+  if(this.collider&&this.vehicle){this.collider.x=this.vehicle.position.x;this.collider.z=this.vehicle.position.z;}
   if(player&&this.vehicle){
    const offsets=[new THREE.Vector3(2.5,0,0),new THREE.Vector3(-2.5,0,0),new THREE.Vector3(0,0,3),new THREE.Vector3(0,0,-3)];
    let found=null;
@@ -84,9 +84,11 @@ export class VehicleSystem{
   this.vehicle.position.z=THREE.MathUtils.clamp(this.vehicle.position.z,-26,26);
   const probe={x:this.vehicle.position.x,z:this.vehicle.position.z};
   for(const c of this.environment.colliders){
+   if(c===this.collider)continue;
    const minX=c.x-c.halfX-1.05,maxX=c.x+c.halfX+1.05,minZ=c.z-c.halfZ-1.95,maxZ=c.z+c.halfZ+1.95;
    if(probe.x>minX&&probe.x<maxX&&probe.z>minZ&&probe.z<maxZ){this.vehicle.position.copy(old);this.speed=0;this.onMessage("VEHICLE COLLISION");break}
   }
+  if(this.collider){this.collider.x=this.vehicle.position.x;this.collider.z=this.vehicle.position.z;}
   this.vehicle.rotation.y=this.yaw;for(const wheel of this.vehicle.userData.wheels)wheel.rotation.x-=this.speed*dt*1.8;
   this.vehicle.userData.speed=this.speed;if(player)player.position.copy(this.vehicle.position);
  }
