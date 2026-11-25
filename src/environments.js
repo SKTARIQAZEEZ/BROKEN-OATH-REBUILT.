@@ -42,6 +42,19 @@ export function buildChapterEnvironment(scene,index){
   for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12)}
   if(kind==="interior"){for(let z=-15;z<=12;z+=5)for(let x of [-10,10])addCover(x,z,2,2.4,1,"archive-shelf")}
  }
+ // Reusable authored interior rooms add navigable, furnished spaces to the blockout.
+ if(["warehouse","interior","fortress","compound","safehouse","homes"].includes(kind)){
+  const ix=17,iz=8,iw=10,id=8,wall=.35,roomMat=material(kind==="warehouse"||kind==="fortress"?0x34383a:0x49433c),floorMat=material(0x292d30);
+  mesh(new THREE.BoxGeometry(iw,.12,id),floorMat,ix,.04,iz,group,"interior-floor");
+  const wallPart=(x,z,w,d,label)=>{mesh(new THREE.BoxGeometry(w,3,d),roomMat,x,1.5,z,group,label);colliders.push({x,z,halfX:w/2,halfZ:d/2,height:3})};
+  wallPart(ix-iw/2,iz,wall,id,"interior-west-wall");wallPart(ix+iw/2,iz,wall,id,"interior-east-wall");wallPart(ix,iz-id/2,iw,wall,"interior-rear-wall");
+  wallPart(ix-iw*.32,iz+id/2,iw*.36,wall,"interior-front-wall-left");wallPart(ix+iw*.32,iz+id/2,iw*.36,wall,"interior-front-wall-right");
+  for(let side=0;side<2;side++){const sx=ix+(side?3.1:-3.1);mesh(new THREE.BoxGeometry(2.4,2.1,.65),material(kind==="interior"?0x555b60:0x51483d),sx,1.05,iz-2.2,group,"interior-storage-shelf");colliders.push({x:sx,z:iz-2.2,halfX:1.2,halfZ:.33,height:2.1});for(let y=.55;y<1.8;y+=.6)mesh(new THREE.BoxGeometry(2.2,.06,.55),trim,sx,y,iz-2.2,group,"shelf-level")}
+  mesh(new THREE.BoxGeometry(2.2,.18,1.1),material(0x554333),ix, .85,iz+.2,group,"interior-work-table");colliders.push({x:ix,z:iz+.2,halfX:1.1,halfZ:.55,height:1});
+  for(const [dx,dz] of [[-2,2],[2,2]]){mesh(new THREE.BoxGeometry(1,.9,1),material(0x4b4035),ix+dx,.45,iz+dz,group,"interior-crate");colliders.push({x:ix+dx,z:iz+dz,halfX:.5,halfZ:.5,height:.9})}
+  const ceiling=mesh(new THREE.BoxGeometry(iw,.18,id),dark,ix,3.05,iz,group,"interior-ceiling");ceiling.visible=false;
+  const practical=new THREE.PointLight(0xc99b67,7,15);practical.position.set(ix,2.6,iz);group.add(practical);
+ }
  const landmark=mesh(new THREE.BoxGeometry(5,3,1),material(accent),0,1.5,-19,group,"chapter-landmark");landmarks.push(landmark);
  const light=new THREE.PointLight(0xc99b67,kind==="interior"?12:18,38);light.position.set(0,8,0);group.add(light);
  const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z],i)=>new THREE.Vector3(x,.12,z));
