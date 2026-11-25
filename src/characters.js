@@ -39,7 +39,7 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
  const animation={name:"idle",elapsed:0,talking:false,expression:"neutral"};
  root.userData={name,limbs,headPivot,animation,face:{mouth,brows},setExpression(expression="neutral"){animation.expression=expression;const tilt=expression==="angry"?.16:expression==="sad"?-.12:0;brows[0].rotation.z=tilt;brows[1].rotation.z=-tilt;mouth.scale.y=expression==="surprised"?.8:expression==="sad"?.35:.22},setTalking(value){animation.talking=!!value},setAnimation(name){animation.name=name;animation.elapsed=0},animate(dt,time,moving=false){
   if(moving&&animation.name==="idle")animation.name="walk";if(!moving&&animation.name==="walk")animation.name="idle";
-  animation.elapsed+=dt;const t=time*9,swing=moving?Math.sin(t)*.55:0;mouth.scale.y=animation.talking?.22+Math.abs(Math.sin(time*13))*.48:(animation.expression==="surprised"?.8:.22);
+  animation.elapsed+=dt;const oneShot={attack:.42,counter:.55,dodge:.38,finisher:.9,hit:.32};if(oneShot[animation.name]!==undefined&&animation.elapsed>=oneShot[animation.name]){animation.name="idle";animation.elapsed=0;root.rotation.set(0,0,0);headPivot.rotation.set(0,0,0)}const t=time*9,swing=moving?Math.sin(t)*.55:0;mouth.scale.y=animation.talking?.22+Math.abs(Math.sin(time*13))*.48:(animation.expression==="surprised"?.8:.22);
   limbs.legs[0].rotation.x=swing;limbs.legs[1].rotation.x=-swing;
   limbs.arms[0].rotation.x=-swing*.7;limbs.arms[1].rotation.x=swing*.7;
   if(animation.name==="attack"){limbs.arms[0].rotation.x=-1.15;limbs.arms[0].rotation.z=-.35}
@@ -48,7 +48,7 @@ export function createCharacter({name,shirt=0x35485b,trousers=0x20252a,skin=0x98
   else if(animation.name==="finisher"){limbs.arms[0].rotation.x=-1.5;limbs.arms[0].rotation.z=-.55;root.rotation.x=-.08}
   else if(animation.name==="guard"){limbs.arms.forEach((a,i)=>{a.rotation.x=-.85;a.rotation.z=i===0?-.25:.25})}
   else if(animation.name==="hit"){headPivot.rotation.x=.22;limbs.arms[0].rotation.x=.6}
-  else {root.rotation.z=0;root.rotation.x=0;headPivot.rotation.x=Math.sin(time*1.4)*.025;limbs.arms.forEach(a=>a.rotation.z=0)}
+  else {root.rotation.z=0;root.rotation.x=0;headPivot.rotation.x=Math.sin(time*1.4)*.025;limbs.arms.forEach(a=>{a.rotation.z=0;if(animation.name==="idle"||animation.name==="walk")a.rotation.x=0})}
  }};
  return root;
 }
