@@ -9,7 +9,7 @@ const OBJECTIVE_ANCHORS=[
  [[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]
 ];
 function mesh(geo,mat,x,y,z,group,name){const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;if(name)o.name=name;group.add(o);return o}
-function addLamp(group,x,z){const pole=mesh(new THREE.CylinderGeometry(.07,.1,4,8),material(0x34383b),x,2,z,group,"street-lamp");const lamp=new THREE.PointLight(0xd0a16b,5,12);lamp.position.set(x,4,z);group.add(lamp);return pole}
+function addLamp(group,x,z){const pole=mesh(new THREE.CylinderGeometry(.07,.1,4,8),material(0x34383b),x,2,z,group,"street-lamp");colliders.push({x,z,halfX:.16,halfZ:.16,height:4});const lamp=new THREE.PointLight(0xd0a16b,5,12);lamp.position.set(x,4,z);group.add(lamp);return pole}
 export function buildChapterEnvironment(scene,index){
  const [name,floorColor,accent,kind]=CHAPTER_ZONES[index]||CHAPTER_ZONES[0],group=new THREE.Group();
  group.name="CHAPTER_ENV_"+String(index+1).padStart(2,"0")+"_"+name;
