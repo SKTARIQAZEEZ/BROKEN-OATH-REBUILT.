@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import {CAMPAIGN} from "./campaign.js";
-import {buildWorld,makePerson} from "./world.js";
+import {buildWorld} from "./world.js";
+import {buildChapterEnvironment} from "./environments.js";
+import {createCharacter,CHARACTER_PRESETS} from "./characters.js";
+import {MissionManager} from "./mission-manager.js";
 import {CombatSystem} from "./combat.js";
 import {StealthSystem} from "./stealth.js";
 import {CinematicDirector} from "./cinematics.js";
@@ -8,18 +11,21 @@ import {SaveSystem} from "./save-system.js";
 import {AudioDirector} from "./audio.js";
 const $=s=>document.querySelector(s),scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,260),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;$("#game").prepend(renderer.domElement);buildWorld(scene);
-const player=makePerson("Azeez",0x354d66);player.position.set(0,0,5);scene.add(player);
-const ranvir=makePerson("Ranvir",0x6d4032);ranvir.position.set(4,0,-4);scene.add(ranvir);
-const ananya=makePerson("Ananya",0x76566a);ananya.position.set(-4,0,-4);scene.add(ananya);
-const anjali=makePerson("Anjali",0x665344);anjali.position.set(-3,0,-8);anjali.visible=false;scene.add(anjali);
-const devraj=makePerson("Devraj",0x25282d,1.1);devraj.position.set(0,0,-30);devraj.visible=false;scene.add(devraj);
-const enemies=[];for(let i=0;i<8;i++){const e=makePerson("Gang Enforcer",0x3c3432,.95);e.position.set(-12+(i%4)*8,0,-18-Math.floor(i/4)*8);e.userData.hp=3;scene.add(e);enemies.push(e)}
+let activeEnvironment=null;
+function loadChapterEnvironment(index){if(activeEnvironment)scene.remove(activeEnvironment);activeEnvironment=buildChapterEnvironment(scene,index).group;}
+loadChapterEnvironment(0);
+const player=createCharacter(CHARACTER_PRESETS.azeez);player.position.set(0,0,5);scene.add(player);
+const ranvir=createCharacter(CHARACTER_PRESETS.ranvir);ranvir.position.set(4,0,-4);scene.add(ranvir);
+const ananya=createCharacter(CHARACTER_PRESETS.ananya);ananya.position.set(-4,0,-4);scene.add(ananya);
+const anjali=createCharacter(CHARACTER_PRESETS.anjali);anjali.position.set(-3,0,-8);anjali.visible=false;scene.add(anjali);
+const devraj=createCharacter({...CHARACTER_PRESETS.devraj,scale:1.1});devraj.position.set(0,0,-30);devraj.visible=false;scene.add(devraj);
+const enemies=[];for(let i=0;i<8;i++){const e=createCharacter({name:"Gang Enforcer",shirt:0x3c3432,scale:.95,role:"gang"});e.position.set(-12+(i%4)*8,0,-18-Math.floor(i/4)*8);e.userData.hp=3;scene.add(e);enemies.push(e)}
 const ring=new THREE.Mesh(new THREE.TorusGeometry(1.05,.05,8,32),new THREE.MeshBasicMaterial({color:0xd3a363}));ring.rotation.x=Math.PI/2;scene.add(ring);
 const marker=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),new THREE.MeshBasicMaterial({color:0xc99b5e,transparent:true,opacity:.7}));scene.add(marker);
 let chapter=0,step=0,health=100,stamina=100,crouch=false,paused=false,attackCD=0,yaw=0,toastTime=0,dragX=null,nearby=false;
 const combat=new CombatSystem({range:3,damage:1}),stealth=new StealthSystem(),saves=new SaveSystem(),audio=new AudioDirector();
 const cinematics=new CinematicDirector({onCaption:(caption,speaker)=>{if(caption)say(caption,speaker||"STORY")}});
-const held={};const points=[[[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]];
+const held={};const missionManager=new MissionManager(CAMPAIGN);const points=[[[0,-4],[4,-4],[-4,-4],[-8,-3]],[[4,-4],[8,2],[-4,-4]],[[-4,-4],[0,-20],[4,-4]],[[0,-20],[10,-20],[18,-25],[0,10]],[[0,-24],[10,-24],[18,-25]],[[0,-30],[5,-30],[10,-30]],[[0,5],[0,-12],[12,-20]],[[0,-12],[-12,-18],[0,-30],[4,-4]],[[-12,-18],[8,2],[0,5],[4,-4]],[[0,-30],[-12,-18],[0,-28],[0,-8]],[[4,-4],[0,-30],[-2,-8]],[[0,-30],[10,-30],[0,-18]],[[-2,-8],[4,-4],[0,-20]],[[0,-30],[0,-18],[0,-30],[4,-4]],[[4,-4],[0,5]]];
 function target(){const p=points[chapter][Math.min(step,points[chapter].length-1)];marker.position.set(p[0],.06,p[1]);ring.position.set(p[0],.13,p[1])}
 function hud(){$("#chapter").textContent="CHAPTER "+String(chapter+1).padStart(2,"0")+" · "+CAMPAIGN[chapter].title.toUpperCase();$("#objective").textContent=CAMPAIGN[chapter].objectives[step]||"Chapter complete";$("#health").style.width=health+"%";$("#stamina").style.width=stamina+"%"}
 function toast(t){$("#toast").textContent=t;toastTime=2}
@@ -27,7 +33,7 @@ function save(){saves.save({chapter,step,health});toast("PROGRESS SAVED") }
 function load(){const s=saves.load();if(s){chapter=Math.max(0,Math.min(14,s.chapter|0));step=Math.max(0,Math.min(CAMPAIGN[chapter].objectives.length-1,s.step|0));health=s.health||100}}
 function say(text,who="STORY"){paused=true;$("#speaker").textContent=who;$("#line").textContent=text;$("#dialogue").classList.remove("hide")}
 $("#next").onclick=()=>{$("#dialogue").classList.add("hide");paused=false};
-function advance(){step++;if(step>=CAMPAIGN[chapter].objectives.length){if(chapter<14){chapter++;step=0;say(CAMPAIGN[chapter].story,"CHAPTER "+String(chapter+1).padStart(2,"0"));}else{step=CAMPAIGN[chapter].objectives.length-1;say("Azeez: You actually kept your promise. Ranvir: We did. Together.","THE PROMISE FULFILLED")}}target();hud();save()}
+function advance(){missionManager.completeObjective({complete:true});step++;if(step>=CAMPAIGN[chapter].objectives.length){if(chapter<14){chapter++;step=0;missionManager.activateChapter(chapter);loadChapterEnvironment(chapter);say(CAMPAIGN[chapter].story,"CHAPTER "+String(chapter+1).padStart(2,"0"));}else{step=CAMPAIGN[chapter].objectives.length-1;say("Azeez: You actually kept your promise. Ranvir: We did. Together.","THE PROMISE FULFILLED")}}target();hud();save()}
 function interact(){if(paused)return;audio.start();audio.playUI();const cast=[ranvir,ananya,anjali,devraj,...enemies].filter(o=>o.visible&&o.position.distanceTo(player.position)<3.1);if(cast.length){const o=cast[0];say(o===ranvir?"Ranvir: You are late, brother.":o===ananya?"Ananya: I kept waiting, even when it hurt.":o===anjali?"Anjali: I won't let him take my son again.":o===devraj?"Devraj: You should have stayed away.":"A gang enforcer blocks your path.",o.name.toUpperCase());return}if(player.position.distanceTo(marker.position)<3.1){say(CAMPAIGN[chapter].story,"MISSION");advance()}else toast("MOVE CLOSER TO THE GOLD OBJECTIVE")}
 function attack(){const result=combat.attack(player,enemies,(target,info)=>{audio.playHit();toast(info.defeated?"ENEMY DEFEATED":"MELEE HIT")});if(result.defeated&&[6,7,9,13].includes(chapter))advance();else if(!result.hit)toast(result.reason==="cooldown"?"WAIT FOR THE NEXT ATTACK":"NO ENEMY IN RANGE")}
 function pause(){paused=!paused;$("#pauseMenu").classList.toggle("hide",!paused)}
@@ -35,8 +41,8 @@ $("#pause").onclick=pause;$("#resume").onclick=pause;$("#save").onclick=save;$("
 addEventListener("keydown",e=>{held[e.key.toLowerCase()]=true;if(e.key.toLowerCase()==="e"||e.code==="Space")audio.start();if(e.key.toLowerCase()==="e")interact();if(e.code==="Space")attack();if(e.key.toLowerCase()==="c")crouch=!crouch;if(e.key==="Escape")pause()});addEventListener("keyup",e=>held[e.key.toLowerCase()]=false);
 const moveMap={forward:"w",back:"s",left:"a",right:"d"};document.querySelectorAll("[data-move]").forEach(b=>{const k=moveMap[b.dataset.move];b.onpointerdown=()=>held[k]=true;["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>held[k]=false))});document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>({attack,crouch:()=>crouch=!crouch,interact}[b.dataset.act]||(()=>{}))());
 renderer.domElement.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse")dragX=e.clientX});renderer.domElement.addEventListener("pointermove",e=>{if(e.buttons===1&&dragX!==null){yaw-=(e.clientX-dragX)*.004;dragX=e.clientX}});renderer.domElement.addEventListener("pointerup",()=>dragX=null);
-function update(dt){if(paused)return;combat.update(dt);cinematics.update(dt);let f=(held.w||held.arrowup?1:0)-(held.s||held.arrowdown?1:0),s=(held.d||held.arrowright?1:0)-(held.a||held.arrowleft?1:0);const dir=new THREE.Vector3(s,0,-f);if(dir.lengthSq()){dir.normalize().applyAxisAngle(new THREE.Vector3(0,1,0),yaw);player.position.addScaledVector(dir,(crouch?2:4.4)*dt);player.rotation.y=Math.atan2(dir.x,dir.z);stamina=Math.max(10,stamina-3*dt)}else stamina=Math.min(100,stamina+12*dt);player.position.x=THREE.MathUtils.clamp(player.position.x,-32,32);player.position.z=THREE.MathUtils.clamp(player.position.z,-35,34);player.userData.legs.forEach((l,i)=>l.rotation.x=dir.lengthSq()?Math.sin(performance.now()*.012+i*Math.PI)*.45:0);
- for(const e of enemies){if(!e.visible)continue;const awareness=stealth.evaluate(e,player,{crouched:crouch,moving:dir.lengthSq()>0});const d=awareness.distance;if(awareness.state==="combat"){e.lookAt(player.position);if(d<1.6){health=Math.max(0,health-9*dt);if(health===0){health=100;player.position.set(0,0,5);toast("DOWNED — CHECKPOINT RESTORED")}}}}
+function update(dt){if(paused)return;combat.update(dt);cinematics.update(dt);let f=(held.w||held.arrowup?1:0)-(held.s||held.arrowdown?1:0),s=(held.d||held.arrowright?1:0)-(held.a||held.arrowleft?1:0);const dir=new THREE.Vector3(s,0,-f);if(dir.lengthSq()){dir.normalize().applyAxisAngle(new THREE.Vector3(0,1,0),yaw);player.position.addScaledVector(dir,(crouch?2:4.4)*dt);player.rotation.y=Math.atan2(dir.x,dir.z);stamina=Math.max(10,stamina-3*dt)}else stamina=Math.min(100,stamina+12*dt);player.position.x=THREE.MathUtils.clamp(player.position.x,-32,32);player.position.z=THREE.MathUtils.clamp(player.position.z,-35,34);player.userData.animate(dt,performance.now()/1000,dir.lengthSq()>0);
+ for(const e of enemies){if(!e.visible)continue;e.userData.animate?.(dt,performance.now()/1000,false);const awareness=stealth.evaluate(e,player,{crouched:crouch,moving:dir.lengthSq()>0});const d=awareness.distance;if(awareness.state==="combat"){e.lookAt(player.position);if(d<1.6){health=Math.max(0,health-9*dt);if(health===0){health=100;player.position.set(0,0,5);toast("DOWNED — CHECKPOINT RESTORED")}}}}
  const camTarget=new THREE.Vector3(player.position.x+Math.sin(yaw)*9,6.2,player.position.z+Math.cos(yaw)*9);camera.position.lerp(camTarget,1-Math.pow(.001,dt));camera.lookAt(player.position.x,1,player.position.z);const close=player.position.distanceTo(marker.position)<3.2||[ranvir,ananya,anjali,devraj,...enemies].some(o=>o.visible&&o.position.distanceTo(player.position)<3.2);$("#prompt").classList.toggle("hide",!close);ring.rotation.z+=dt*.8;hud();if(toastTime>0){toastTime-=dt;if(toastTime<=0)$("#toast").textContent=""}}
 let last=performance.now();function loop(t){requestAnimationFrame(loop);const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);renderer.render(scene,camera)}addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6))});
-load();target();hud();$("#loading").classList.add("hide");requestAnimationFrame(loop);
+load();missionManager.restore({schema:2,chapter,objective:step,status:"active",unlocked:Array.from({length:chapter+1},(_,i)=>i)});loadChapterEnvironment(chapter);target();hud();$("#loading").classList.add("hide");requestAnimationFrame(loop);
