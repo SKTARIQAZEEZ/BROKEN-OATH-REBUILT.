@@ -16,14 +16,56 @@ export function buildChapterEnvironment(scene,index){
  const floor=mesh(new THREE.PlaneGeometry(58,58),createSurfaceMaterial("asphalt",{color:floorColor,seed:index+1}),0,-.02,0,group,"walkable-ground");floor.rotation.x=-Math.PI/2;
  const wallMat=createSurfaceMaterial(kind==="ruins"?"burnt":"concrete",{color:accent,seed:index+11}),dark=createSurfaceMaterial("metal",{color:0x171d22,seed:index+31}),windowMat=material(0x182a35,.35),trim=material(0x77716a);
  const colliders=[],landmarks=[];
+ const addRoadNetwork=()=>{
+  const asphalt=material(0x24292b,.94),lane=material(0xb7b3a4,.82),walk=material(0x555756,.95);
+  const road=(x,z,w,d,label)=>mesh(new THREE.BoxGeometry(w,.07,d),asphalt,x,.035,z,group,label);
+  const marking=(x,z,w,d)=>mesh(new THREE.BoxGeometry(w,.018,d),lane,x,.079,z,group,"road-lane-marking");
+  road(0,16,56,7,"drivable-main-road");road(23,0,7,50,"drivable-connector-road");
+  for(let x=-26;x<27;x+=6)marking(x,16,2.8,.10);
+  for(let z=-24;z<25;z+=6)marking(23,z,.10,2.8);
+  for(const z of [12.45,19.55])road(0,z,56,.16,"road-shoulder");
+  for(const x of [19.45,26.55])road(x,0,.16,50,"road-shoulder");
+  for(const z of [12.1,19.9])for(let x=-27;x<=27;x+=3)marking(x,z,.8,.055);
+  for(const x of [19.1,26.9])for(let z=-24;z<=24;z+=3)marking(x,z,.055,.8);
+  mesh(new THREE.BoxGeometry(56,.09,1.4),walk,0,.045,21.2,group,"roadside-sidewalk");
+  mesh(new THREE.BoxGeometry(1.4,.09,50),walk,27.2,.045,0,group,"roadside-sidewalk");
+ };
  const addBuilding=(x,z,w,h,d,label="building")=>{const b=mesh(new THREE.BoxGeometry(w,h,d),wallMat,x,h/2,z,group,label);colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});for(let yy=2.5;yy<h-1;yy+=3)for(let xx=-w/2+1.2;xx<w/2-1;xx+=3)mesh(new THREE.BoxGeometry(.9,1.1,.06),windowMat,x+xx,yy,z-d/2-.04,group,"window");return b};
  const addCover=(x,z,w=2.4,h=1.15,d=.8,label="cover")=>{const o=mesh(new THREE.BoxGeometry(w,h,d),dark,x,h/2,z,group,label);colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});return o};
+ if(!["rooftop","interior","ceremony"].includes(kind))addRoadNetwork();
  if(kind==="sports"){
-  mesh(new THREE.BoxGeometry(28,.12,18),material(0x52634b),0,.04,-4,group,"football-pitch");
-  for(const x of [-14,14])mesh(new THREE.BoxGeometry(.2,.12,18),trim,x,.12,-4,group,"pitch-line");
-  for(const z of [-13,5])mesh(new THREE.BoxGeometry(28,.08,.12),trim,0,.13,z,group,"pitch-line");
-  for(const x of [-13,13]){mesh(new THREE.BoxGeometry(.25,2.2,.25),trim,x,1,-4,group,"goal-post");colliders.push({x,z:-4,halfX:.14,halfZ:.14,height:2.2});mesh(new THREE.BoxGeometry(2.5,.2,.2),trim,x,2.1,-4,group,"goal-crossbar")}
-  addBuilding(-19,-18,8,8,7,"school-building");addBuilding(19,-18,8,8,7,"classroom");
+  // Full school football ground: maintained turf, pitch markings, goal frames and net grids.
+  const turf=material(0x3e6040,.96),stripe=material(0xb8b7a8,.88),goalMat=material(0xd1d0c8,.48,.18),netMat=new THREE.MeshBasicMaterial({color:0xaaa99d,transparent:true,opacity:.42});
+  mesh(new THREE.BoxGeometry(30,.16,20),turf,0,.04,-4,group,"football-pitch");
+  for(let i=0;i<6;i++)mesh(new THREE.BoxGeometry(5,.012,19.7),material(i%2?0x466b46:0x3c5d3d,.98),-12.5+i*5,.126,-4,group,"pitch-mowing-stripe");
+  const line=(x,z,w,d,label="pitch-line")=>mesh(new THREE.BoxGeometry(w,.025,d),stripe,x,.145,z,group,label);
+  line(0,-13,28,.12);line(0,5,28,.12);line(-14,-4,.12,18);line(14,-4,.12,18);line(0,-4,.12,18);
+  line(0,-13,10,.12,"penalty-box-line");line(0,-9,10,.12,"penalty-box-line");line(-5,-11,.12,4,"penalty-box-line");line(5,-11,.12,4,"penalty-box-line");
+  line(0,5,10,.12,"penalty-box-line");line(0,1,10,.12,"penalty-box-line");line(-5,3,.12,4,"penalty-box-line");line(5,3,.12,4,"penalty-box-line");
+  const circle=new THREE.Mesh(new THREE.TorusGeometry(2.2,.055,8,64),stripe);circle.rotation.x=Math.PI/2;circle.position.set(0,.17,-4);circle.name="centre-circle";group.add(circle);
+  mesh(new THREE.CylinderGeometry(.11,.11,.025,16),stripe,0,.17,-4,group,"centre-spot");
+  for(const z of [-10.8,2.8])mesh(new THREE.CylinderGeometry(.09,.09,.025,12),stripe,0,.17,z,group,"penalty-spot");
+  for(const z of [-13,5]){
+   const goalZ=z===-13?-14.15:6.15,backZ=z===-13?-15.2:7.2;
+   for(const x of [-2.1,2.1]){mesh(new THREE.CylinderGeometry(.075,.075,2.35,12),goalMat,x,1.18,goalZ,group,"football-goal-post");colliders.push({x,z:goalZ,halfX:.1,halfZ:.1,height:2.35})}
+   mesh(new THREE.CylinderGeometry(.075,.075,4.2,12),goalMat,0,2.35,goalZ,group,"football-goal-crossbar").rotation.z=Math.PI/2;
+   for(let i=0;i<=8;i++){const x=-2.1+i*.525;mesh(new THREE.CylinderGeometry(.012,.012,2.3,5),netMat,x,1.15,backZ,group,"goal-net-vertical")}
+   for(let y=0;y<=4;y++)mesh(new THREE.BoxGeometry(4.2,.012,.012),netMat,0,.12+y*.56,backZ,group,"goal-net-horizontal");
+   for(const x of [-2.1,2.1])mesh(new THREE.BoxGeometry(.025,2.3,1.05),netMat,x,1.15,(goalZ+backZ)/2,group,"goal-net-side");
+  }
+  for(const x of [-15.8,15.8])for(let z=-13;z<=5;z+=3){mesh(new THREE.CylinderGeometry(.045,.055,2.1,8),dark,x,1.05,z,group,"ground-fence-post");colliders.push({x,z,halfX:.07,halfZ:.07,height:2.1})}
+  for(const z of [-13,5])for(let x=-15.8;x<=15.8;x+=3){mesh(new THREE.CylinderGeometry(.045,.055,2.1,8),dark,x,1.05,z,group,"ground-fence-post");colliders.push({x,z,halfX:.07,halfZ:.07,height:2.1})}
+  for(const x of [-17.2,17.2]){
+   for(let tier=0;tier<3;tier++){mesh(new THREE.BoxGeometry(3.2,.35,12),material(tier%2?0x41494a:0x55534b),x,.45+tier*.55,-4,group,"spectator-bleacher");colliders.push({x,z:-4,halfX:1.6,halfZ:6,height:1.1+tier*.55})}
+   for(const z of [-10,2])mesh(new THREE.BoxGeometry(3.4,.12,.18),trim,x,.2,z,group,"bleacher-step");
+  }
+  for(const [x,z] of [[-17,-17],[17,-17],[-17,9],[17,9]]){
+   mesh(new THREE.CylinderGeometry(.11,.16,9,10),dark,x,4.5,z,group,"football-floodlight-pole");colliders.push({x,z,halfX:.2,halfZ:.2,height:9});
+   const glow=new THREE.SpotLight(0xd5d1b9,18,30,.55,.5,1.2);glow.position.set(x,8.65,z);glow.target.position.set(0,0,-4);group.add(glow,glow.target);
+  }
+  addBuilding(-20,-22,8,8,7,"school-building");addBuilding(20,-22,8,8,7,"classroom");
+  mesh(new THREE.BoxGeometry(4,1.7,.18),dark,0,3.2,-20,group,"school-scoreboard");
+  for(const x of [-1.35,1.35])mesh(new THREE.BoxGeometry(1.1,.7,.08),material(0x263b3b),x,3.2,-19.88,group,"scoreboard-display");
  }else if(kind==="ruins"){
   for(let i=0;i<15;i++){const h=1.1+(i%4)*.85,x=-12+(i%5)*6,z=-10+Math.floor(i/5)*9;addCover(x,z,3,h,2,"burned-rubble")}
   for(let i=0;i<8;i++)mesh(new THREE.ConeGeometry(.35,.9,6),material(0x171514),-14+i*4,.45,-17+(i%2)*3,group,"debris");
