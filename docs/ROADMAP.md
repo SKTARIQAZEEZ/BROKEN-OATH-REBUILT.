@@ -19,6 +19,7 @@
 - [x] Five named procedural character meshes and basic body animation
 - [x] Procedural facial expressions and dialogue-driven mouth motion hooks
 - [x] Authored dialogue beats and directed shot types for all 15 chapters
+- [x] Reunion dialogue is staged after the final captive rescue, followed by the brotherhood truth sequence
 - [x] Cinematic camera staging and sequence lifecycle callbacks
 - [ ] Production-quality realistic character models, topology, UVs, materials and clothing
 - [ ] Full facial rigs, recorded voice, phoneme-aligned lip-sync and authored/mocap animation clips
@@ -35,6 +36,7 @@
 
 ### Audio
 - [x] Procedural ambience, footsteps, UI and impact tones
+- [x] Named objective, failure, chapter-transition and boss audio cues with ambience switching
 - [ ] Original composed score, recorded dialogue performances, final SFX library, mixing and mastering
 
 ## Remaining production and verification gates
