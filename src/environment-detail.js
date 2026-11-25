@@ -6,6 +6,9 @@ function light(group,x,y,z,color=0xc99b67,intensity=2,range=8){const l=new THREE
 /** Adds reusable set-dressing kits; gameplay collision remains explicit and testable. */
 export function decorateEnvironment(group,kind,colliders=[]){
  const metal=mat(0x343a3e,.42,.72),rust=mat(0x654334,.88),rubber=mat(0x171a1d),wood=mat(0x51402f),warning=mat(0x9b7441,.5),glass=mat(0x263c43,.22,.25),concrete=mat(0x424444);
+ // Every chapter receives small grounded service details, even when its set has a unique kit.
+ prop(group,new THREE.BoxGeometry(1.1,.08,.7),metal,-25,.04,24,"service-floor-hatch");
+ prop(group,new THREE.CylinderGeometry(.06,.08,2.2,8),metal,25,1.1,24,"service-pipe");
  const addCollider=(x,z,w,d,h)=>colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});
  if(["warehouse","industrial","fortress","compound","interior"].includes(kind)){
   // Industrial pipe runs, cable trays and structural beams break up large flat walls.
