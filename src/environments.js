@@ -22,7 +22,7 @@ export function buildChapterEnvironment(scene,index){
   mesh(new THREE.BoxGeometry(28,.12,18),material(0x52634b),0,.04,-4,group,"football-pitch");
   for(const x of [-14,14])mesh(new THREE.BoxGeometry(.2,.12,18),trim,x,.12,-4,group,"pitch-line");
   for(const z of [-13,5])mesh(new THREE.BoxGeometry(28,.08,.12),trim,0,.13,z,group,"pitch-line");
-  for(const x of [-13,13]){mesh(new THREE.BoxGeometry(.25,2.2,.25),trim,x,1,-4,group,"goal-post");mesh(new THREE.BoxGeometry(2.5,.2,.2),trim,x,2.1,-4,group,"goal-crossbar")}
+  for(const x of [-13,13]){mesh(new THREE.BoxGeometry(.25,2.2,.25),trim,x,1,-4,group,"goal-post");colliders.push({x,z:-4,halfX:.14,halfZ:.14,height:2.2});mesh(new THREE.BoxGeometry(2.5,.2,.2),trim,x,2.1,-4,group,"goal-crossbar")}
   addBuilding(-19,-18,8,8,7,"school-building");addBuilding(19,-18,8,8,7,"classroom");
  }else if(kind==="ruins"){
   for(let i=0;i<15;i++){const h=1.1+(i%4)*.85,x=-12+(i%5)*6,z=-10+Math.floor(i/5)*9;addCover(x,z,3,h,2,"burned-rubble")}
@@ -34,11 +34,11 @@ export function buildChapterEnvironment(scene,index){
   for(let x=-20;x<=20;x+=10)addLamp(group,x,-5,colliders);
  }else if(kind==="rooftop"){
   for(let x=-24;x<=24;x+=8)addBuilding(x,-18,7,8+(Math.abs(x)%3),6,"rooftop-tower");
-  mesh(new THREE.BoxGeometry(48,1,1),dark,0,.5,26,group,"parapet");
+  mesh(new THREE.BoxGeometry(48,1,1),dark,0,.5,26,group,"parapet");colliders.push({x:0,z:26,halfX:24,halfZ:.5,height:1});
   for(let x=-20;x<=20;x+=10)addCover(x,8,2,1.2,1.2,"rooftop-vent");
  }else if(kind==="ceremony"){
-  for(let x=-8;x<=8;x+=4){mesh(new THREE.CylinderGeometry(.13,.13,5,10),material(0x8c795f),x,2.5,-12,group,"ceremony-pillar");mesh(new THREE.SphereGeometry(.7,12,10),material(0x9b744f),x,5.3,-12,group,"floral-decoration")}
-  mesh(new THREE.BoxGeometry(10,.4,4),material(0x76563e),0,.2,-18,group,"wedding-stage");
+  for(let x=-8;x<=8;x+=4){mesh(new THREE.CylinderGeometry(.13,.13,5,10),material(0x8c795f),x,2.5,-12,group,"ceremony-pillar");colliders.push({x,z:-12,halfX:.16,halfZ:.16,height:5});mesh(new THREE.SphereGeometry(.7,12,10),material(0x9b744f),x,5.3,-12,group,"floral-decoration")}
+  mesh(new THREE.BoxGeometry(10,.4,4),material(0x76563e),0,.2,-18,group,"wedding-stage");colliders.push({x:0,z:-18,halfX:5,halfZ:2,height:.4});
  }else{
   if(!["homes","safehouse","street"].includes(kind))for(let x=-22;x<=22;x+=11){addBuilding(x,-21,8,9+(Math.abs(x)%3)*2,7,"street-building");addBuilding(x,21,8,8,7,"street-building")}
   for(let x=-15;x<=15;x+=10){addCover(x,-4,2.5,1.4,1,"street-cover");addLamp(group,x,12,colliders)}
@@ -74,9 +74,10 @@ export function buildChapterEnvironment(scene,index){
   mesh(new THREE.BoxGeometry(2.2,.18,1.1),material(0x554333),ix, .85,iz+.2,group,"interior-work-table");colliders.push({x:ix,z:iz+.2,halfX:1.1,halfZ:.55,height:1});
   for(const [dx,dz] of [[-2,2],[2,2]]){mesh(new THREE.BoxGeometry(1,.9,1),material(0x4b4035),ix+dx,.45,iz+dz,group,"interior-crate");colliders.push({x:ix+dx,z:iz+dz,halfX:.5,halfZ:.5,height:.9})}
   const ceiling=mesh(new THREE.BoxGeometry(iw,.18,id),dark,ix,3.05,iz,group,"interior-ceiling");ceiling.visible=false;
+  for(const cx of [ix-iw/2,ix+iw/2])for(const cz of [iz-id/2,iz+id/2])colliders.push({x:cx,z:cz,halfX:.18,halfZ:.18,height:3});
   const practical=new THREE.PointLight(0xc99b67,7,15);practical.position.set(ix,2.6,iz);group.add(practical);
  }
- const landmark=mesh(new THREE.BoxGeometry(5,3,1),material(accent),0,1.5,-19,group,"chapter-landmark");landmarks.push(landmark);
+ const landmark=mesh(new THREE.BoxGeometry(5,3,1),material(accent),0,1.5,-19,group,"chapter-landmark");colliders.push({x:0,z:-19,halfX:2.5,halfZ:.5,height:3});landmarks.push(landmark);
  const light=new THREE.PointLight(0xc99b67,kind==="interior"?12:18,38);light.position.set(0,8,0);group.add(light);
  decorateEnvironment(group,kind,colliders);
  const anchors=(OBJECTIVE_ANCHORS[index]||OBJECTIVE_ANCHORS[0]).map(([x,z])=>{
