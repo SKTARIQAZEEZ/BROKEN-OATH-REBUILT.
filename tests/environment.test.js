@@ -15,9 +15,9 @@ if(["homes","safehouse","street"].includes(env.kind))assert.ok(env.group.childre
 if(["homes","safehouse","street"].includes(env.kind)){
  const houses=env.group.children.filter(o=>o.name==="residential-house");
  assert.ok(houses.length>0,"Residential chapters need house shells");
- const house=houses[0],hx=house.position.x,hz=house.position.z;
+ const house=houses[0],hx=house.position.x,hz=house.position.z,houseParts=[];house.traverse(o=>houseParts.push(o.name));
  for(const part of ["house-front-wall-left","house-front-wall-right","house-front-door","house-interior-floor","house-sofa","house-cabinet","house-coffee-table","house-bed"])
-  assert.ok(house.children.some(o=>o.name===part),`Enterable furnished house needs ${part}`);
+  assert.ok(houseParts.includes(part),`Enterable furnished house needs ${part}`);
  assert.ok(!env.colliders.some(c=>Math.abs(c.x-hx)<.7&&Math.abs(c.z-(hz+3.05))<.45),
   "The front doorway must remain open in the collision grid");
  assert.ok(env.colliders.some(c=>c.x<hx-3&&Math.abs(c.z-hz)<.2),"House side walls must block passage");
