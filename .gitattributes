@@ -1,0 +1,2 @@
+# Authored 3D character and NPC models are stored with Git LFS.
+*.glb filter=lfs diff=lfs merge=lfs -text
