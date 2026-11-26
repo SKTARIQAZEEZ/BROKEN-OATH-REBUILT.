@@ -9,7 +9,9 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify:assets": "node scripts/verify-character-assets.mjs",
+    "verify:release": "npm test && npm run build && npm run verify:assets"
   },
   "dependencies": {
     "three": "0.160.0"
