@@ -11,17 +11,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
       - name: Install dependencies
         run: npm install
-      - name: Run syntax and campaign checks
-        run: npm test
-      - name: Build self-contained browser bundle
-        run: npm run build
+      - name: Run full release gate (tests, production build, all 39 authored GLB assets)
+        run: npm run verify:release
       - name: Install Chromium for browser QA
         run: npx playwright install --with-deps chromium
       - name: Run desktop and mobile browser smoke tests
         run: npm run test:e2e
-      - name: Create game ZIP
+      - name: Verify packaged build contains authored character and NPC assets
+        run: |
+          test -d dist/assets/characters
+          test -d dist/assets/npcs
+          test "$(find dist/assets/characters -type f -name '*.glb' | wc -l)" -eq 20
+          test "$(find dist/assets/npcs -type f -name '*.glb' | wc -l)" -eq 19
+      - name: Create final game ZIP
         run: |
           zip -r BROKEN_OATH_COMPLETE_GAME.zip dist src docs README.md package.json package-lock.json playwright.config.js tests
       - name: Upload ZIP artifact
