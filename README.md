@@ -62,3 +62,16 @@ This is **not yet a production-complete game**. The current character art and en
 - **Space:** melee attack when a melee weapon is equipped.
 - On touch devices, use **AIM**, **FIRE / ATTACK**, and **RELOAD**.
 - Firearms use weapon-specific fire rates, damage, range, spread, magazine sizes, reserve ammunition and reload times. Shots use camera-centred hit detection and environment line-of-sight checks.
+
+
+## NPC and residential-world integration
+
+The runtime NPC roster is defined in `src/npc-roster.js`:
+- Four guard archetypes are used by hostile encounters.
+- Ten civilian/worker actors are placed by chapter district and can be approached for contextual dialogue.
+- Five named mini-boss models are mapped to the campaign defeat objectives: compound guards, street gang, Devraj's lieutenant, district gang, and final guards.
+- `tests/npc-roster.test.js` asserts that these assignments cover all 19 supplied NPC model exports.
+
+Residential environments now use separate wall colliders around an open front doorway rather than a single solid house collider. The house shells include a furnished walkable interior (sofa, cabinet, coffee table, bed), and `tests/environment.test.js` checks the doorway clearance and interior objects.
+
+**Asset deployment note:** The NPC and character GLB binaries are not currently committed under `public/assets` in this repository. Run the supplied `scripts/install-character-assets.ps1` with the two source ZIP archives before a hosted build can load the authored models. Without that local asset-install step, the procedural character fallbacks remain visible.
