@@ -100,7 +100,7 @@ function interact(){
   advance(payload);return;
  }
  const cast=[ranvir,ananya,anjali,devraj,...enemies,...ambientNpcActors.map(entry=>entry.actor)].filter(a=>near(a));
- if(cast.length){const a=cast[0];say(a===ranvir?"Ranvir: You are late, brother.":a===ananya?"Ananya: I kept waiting, even when it hurt.":a===anjali?"Anjali: I won't let him take my son again.":a===devraj?"Devraj: You should have stayed away.":"A gang enforcer blocks your path.",a.name.toUpperCase());return}
+ if(cast.length){const a=cast[0];say(a===ranvir?"Ranvir: You are late, brother.":a===ananya?"Ananya: I kept waiting, even when it hurt.":a===anjali?"Anjali: I won't let him take my son again.":a===devraj?"Devraj: You should have stayed away.":a.userData.npcRole==="worker"?"Worker: Keep your head down. This district is not safe.":a.userData.npcRole==="civilian"?"Resident: Things changed when Devraj took control.":"A gang enforcer blocks your path.",a.name.toUpperCase());return}
  toast("MOVE CLOSER TO THE OBJECTIVE OR CHARACTER");
 }
 function steerGuard(guard,target,dt){if(!target||!navigation){guard.userData.isMoving=false;return}const goalKey=Math.round(target.x/2)+":"+Math.round(target.z/2);if(guard.userData.navGoal!==goalKey||!guard.userData.navPath?.length){guard.userData.navGoal=goalKey;guard.userData.navPath=navigation.findPath(guard.position,target)}const waypoint=guard.userData.navPath?.[0];if(!waypoint){guard.userData.isMoving=false;return}const dx=waypoint.x-guard.position.x,dz=waypoint.z-guard.position.z,dist=Math.hypot(dx,dz);if(dist<.65){guard.userData.navPath.shift();guard.userData.isMoving=false}else{guard.userData.isMoving=true;guard.position.x+=dx/dist*1.9*dt;guard.position.z+=dz/dist*1.9*dt;guard.lookAt(waypoint.x,0,waypoint.z)}}
