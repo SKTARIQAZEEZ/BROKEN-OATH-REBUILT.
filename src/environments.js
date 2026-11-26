@@ -91,7 +91,7 @@ export function buildChapterEnvironment(scene,index){
   const houseXs=kind==="street"?[-18,0,18]:[-18,18];
   for(let i=0;i<houseXs.length;i++){
    const x=houseXs[i],z=kind==="street"?-9+(i%2)*18:0;
-   const w=7.4,d=6.2,h=5.8,house=new THREE.Group();house.name="residential-house";group.add(house);
+   const w=7.4,d=6.2,h=5.8,house=new THREE.Group();house.name="residential-house";house.position.set(x,0,z);group.add(house);
    const facadeMat=createSurfaceMaterial("concrete",{color:i%2?0x4b4944:0x5a5147,seed:index*17+i});
    const wall=(wx,wy,wz,ww,wh,wd,label)=>{mesh(new THREE.BoxGeometry(ww,wh,wd),facadeMat,wx,wy,wz,house,label);colliders.push({x:x+wx,z:z+wz,halfX:ww/2,halfZ:wd/2,height:wh})};
    mesh(new THREE.BoxGeometry(w,.16,d),material(0x292b2a),0,.08,0,house,"house-interior-floor");
