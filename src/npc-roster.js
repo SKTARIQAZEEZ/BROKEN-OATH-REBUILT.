@@ -2,6 +2,9 @@ import * as THREE from "three";
 import {createCharacter} from "./characters.js";
 import {attachCharacterAsset} from "./character-assets.js";
 
+// Four regular guard archetypes, ten ambient residents/workers and five mini-bosses = all 19 NPC exports.
+export const GUARD_ASSETS = Object.freeze(["Guard_Armed.glb","Guard_Male.glb","Guard_Female.glb","Guard_Supervisor.glb"]);
+
 // Ambient cast is deliberately separate from hostile encounter actors.
 export const NPC_AMBIENT = [
  {id:"civilian-elderly-man",asset:"Civilian_Elderly_Man.glb",name:"Elderly Resident",role:"civilian",chapters:[0,6,7],position:[-23,8]},
