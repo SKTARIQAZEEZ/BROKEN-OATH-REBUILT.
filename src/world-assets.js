@@ -20,27 +20,30 @@ const ASSETS = {
   sportsCar: "red-sports-car.glb",
   barn: "red-wooden-barn.glb",
   cottage: "https://tevy.dev/models/red-cottage/v2/lod0.glb",
-  apartment: "https://tevy.dev/models/apartment-block/v2/lod0.glb",
-  apartmentRoom: "https://tevy.dev/models/apartment-room/v2/lod0.glb",
-  cypress: "https://tevy.dev/models/bald-cypress/v1/lod0.glb",
-  dirtBike: "https://tevy.dev/models/dirt-bike/v1/lod0.glb"
+  apartment: "apartment-block.glb",
+  apartmentRoom: "apartment-room.glb",
+  cypress: "bald-cypress.glb",
+  dirtBike: "dirt-bike.glb",
+  cornerShop: "corner-shop.glb",
+  scooter: "delivery-scooter.glb",
+  footballGoal: "football-goal.glb"
 };
 
 const PLACEMENTS = {
   homes: [
     ["house",-22, -10, 8], ["house",22,-10,8],
     ["tree",-25,-18,5], ["tree",25,-18,5], ["stump",-24,5,1.4],
-    ["rock",24,6,1.8]
+    ["rock",24,6,1.8], ["cypress",-19,12,7]
   ],
   sports: [
     ["tree",-21,-18,5], ["tree",21,-18,5], ["tree",-21,10,5],
-    ["rock",21,10,1.8], ["stump",-20,2,1.4], ["log",20,2,1.4]
+    ["rock",21,10,1.8], ["stump",-20,2,1.4], ["log",20,2,1.4], ["footballGoal",0,-15,4.5]
   ],
   rooftop: [["rock",-22,18,1.6],["stump",22,18,1.2]],
   industrial: [
     ["pickup",19,15,4.7], ["deadTree",-22,-20,5],
     ["log",-20,8,1.5], ["rock",21,-18,1.8],
-    ["barn",-17,-18,9]
+    ["barn",-17,-18,9], ["dirtBike",12,8,3.5]
   ],
   ruins: [
     ["deadTree",-18,-14,5], ["stump",-16,-2,1.4],
@@ -54,11 +57,11 @@ const PLACEMENTS = {
   street: [
     ["police",-20,16,4.8], ["bus",0,16,8],
     ["sportsCar",20,16,4.8], ["pickup",10,-4,4.8],
-    ["tree",-24,-18,5], ["tree",24,-18,5]
+    ["tree",-24,-18,5], ["tree",24,-18,5], ["cornerShop",-20,-8,8], ["scooter",8,8,2.8], ["apartment",22,-14,14]
   ],
   investigation: [
     ["police",19,15,4.8], ["pickup",-20,15,4.8],
-    ["deadTree",-22,-18,5], ["rock",22,-16,1.8]
+    ["deadTree",-22,-18,5], ["rock",22,-16,1.8], ["scooter",8,8,2.8], ["cornerShop",-20,-8,8]
   ],
   arena: [
     ["tree",-23,-20,5], ["tree",23,-20,5],
@@ -71,7 +74,7 @@ const PLACEMENTS = {
   interior: [["apartmentRoom",0,-2,16]],
   safehouse: [
     ["house",-22,-10,8], ["house",22,-10,8],
-    ["tree",-25,-18,5], ["tree",25,-18,5], ["pickup",20,15,4.8]
+    ["tree",-25,-18,5], ["tree",25,-18,5], ["pickup",20,15,4.8], ["cypress",-19,12,7]
   ],
   fortress: [
     ["police",20,15,4.8], ["fireTruck",-20,15,5],
@@ -124,14 +127,14 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
         group.add(model);
         const finalSize = fitted.getSize(new THREE.Vector3());
         const center = new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3());
-        if (key !== "tree" && key !== "deadTree" && key !== "cypress" && key !== "house" && key !== "cottage" && key !== "apartment" && key !== "apartmentRoom" && key !== "barn") {
+        if (key !== "tree" && key !== "deadTree" && key !== "cypress" && key !== "house" && key !== "cottage" && key !== "apartment" && key !== "apartmentRoom" && key !== "barn" && key !== "cornerShop") {
           colliders.push({
             x: center.x, z: center.z,
             halfX: Math.max(.25, finalSize.x * .46),
             halfZ: Math.max(.25, finalSize.z * .46),
             height: Math.max(.5, finalSize.y)
           });
-        } else if (key === "house" || key === "cottage" || key === "apartment" || key === "apartmentRoom") {
+        } else if (key === "house" || key === "cottage" || key === "apartment" || key === "apartmentRoom" || key === "cornerShop") {
           // Keep the interior traversable: collide against four perimeter walls,
           // leaving a front entrance gap instead of blocking the entire footprint.
           const hx = Math.max(1.5, finalSize.x * .46);
