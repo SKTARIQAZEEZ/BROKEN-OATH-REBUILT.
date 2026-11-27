@@ -1,25 +1,38 @@
 # Authored world asset placement
 
-The chapter environment loader now has an authored-asset placement manifest in
-`src/world-assets.js`. It preserves the procedural chapter geometry as a
-fallback and attempts to load the following GLBs from `public/assets/world/`:
+The chapter environment loader uses an authored-asset placement manifest in
+`src/world-assets.js`. It preserves procedural chapter geometry as a fallback
+and loads local GLBs from `public/assets/world/`.
 
-- `suburban-family-house.glb`
-- `black-and-white-police-car.glb`
-- `blue-pickup-truck.glb`
-- `oak-tree-stump.glb`
-- `cartoon-stylized-tree.glb`
-- `city-transit-bus.glb`
-- `dead-leafless-tree.glb`
-- `fallen-wooden-log.glb`
-- `low-poly-grey-rock.glb`
-- `red-fire-truck.glb`
-- `red-sports-car.glb`
-- `red-wooden-barn.glb`\n\nThe following five additional models are loaded directly from the URLs you supplied:\n\n- Red cottage — `https://tevy.dev/models/red-cottage/v2/lod0.glb`\n- Apartment block — `https://tevy.dev/models/apartment-block/v2/lod0.glb`\n- Apartment room — `https://tevy.dev/models/apartment-room/v2/lod0.glb`\n- Bald cypress — `https://tevy.dev/models/bald-cypress/v1/lod0.glb`\n- Dirt bike — `https://tevy.dev/models/dirt-bike/v1/lod0.glb`
+The current asset pack contains 19 local models:
+- suburban-family-house.glb
+- black-and-white-police-car.glb
+- blue-pickup-truck.glb
+- oak-tree-stump.glb
+- cartoon-stylized-tree.glb
+- city-transit-bus.glb
+- dead-leafless-tree.glb
+- fallen-wooden-log.glb
+- low-poly-grey-rock.glb
+- red-fire-truck.glb
+- red-sports-car.glb
+- red-wooden-barn.glb
+- apartment-block.glb
+- apartment-room.glb
+- bald-cypress.glb
+- corner-shop.glb
+- delivery-scooter.glb
+- dirt-bike.glb
+- football-goal.glb
+
+The following URL assets remain external:
+- Red cottage — `https://tevy.dev/models/red-cottage/v2/lod0.glb`
+- Football — `https://tevy.dev/models/football/v1/lod0.glb`
+- Football pitch — `https://tevy.dev/models/football-pitch/v1/lod0.glb`
 
 ## Install the uploaded model files
 
-Copy the 12 original GLB files into:
+Extract `BROKEN_OATH_WORLD_ASSETS_INSTALL_v2.zip` into the project root. It contains the 19 GLB files under `public/assets/world/`.
 
 ```text
 D:\\final\\BROKEN-OATH\\public\\assets\\world\\
@@ -47,8 +60,4 @@ the entrance and interior remain accessible.
 
 ## Verification status
 
-The source-side loader and placement manifest are committed. The GLB binaries
-are not included in this repository yet, so the authored models will not appear
-until the files are copied into the folder above. The procedural environment
-remains active as a fallback. Visual placement, model scale, and collision
-still require an in-browser playtest after the binaries are present.
+The source-side loader and story placement manifest are committed. The GLB binaries are packaged separately and must be extracted and pushed to the repository. The procedural environment remains active as a fallback. Visual placement, model scale, and collision still require an in-browser playtest after the binaries are present.
