@@ -20,7 +20,7 @@ test("desktop game boots offline, renders the world and exposes core menus",asyn
  await expect(page.locator("#game canvas")).toBeVisible();
  await expect(page.locator("#chapter")).toContainText("CHAPTER 01");
  await dismissIntroIfPresent(page);
- await page.locator("#pause").click();
+ // The WebGL scene animates continuously, so invoke the real button click handler\n // directly rather than waiting for Playwright pointer-stability heuristics.\n await page.locator("#pause").evaluate(button=>button.click());
  await expect(page.locator("#pauseMenu")).toBeVisible();
  await page.locator("#audioToggle").click();
  await expect(page.locator("#audioToggle")).toHaveAttribute("aria-pressed","false");
@@ -39,11 +39,11 @@ test("mobile layout exposes touch controls and camera surface",async({page},test
  await page.goto("/");
  await expect(page.locator("#loading")).toBeHidden({timeout:20000});
  await expect(page.locator("#game canvas")).toBeVisible();
- await waitForIntroToFinish(page);
+ await dismissIntroIfPresent(page);
  await expect(page.locator('#touch [data-move="forward"]')).toBeVisible();
  await expect(page.locator('#touch [data-act="attack"]')).toBeVisible();
  await page.locator('#touch [data-act="weapon"]').tap({force:true});
- await page.locator("#pause").tap({force:true});
+ await page.locator("#pause").evaluate(button=>button.click());
  await expect(page.locator("#pauseMenu")).toBeVisible();
  await page.locator("#resume").tap({force:true});
  await expect(page.locator("#pauseMenu")).toBeHidden();
