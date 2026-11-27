@@ -105,7 +105,7 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
   const pending = [];
   for (const [key,x,z,targetSize] of placements) {
     const assetPath = ASSETS[key];
-    const path = /^https?:\\/\\//i.test(assetPath) ? assetPath : ROOT + assetPath;
+    const path = /^https?:\/\//i.test(assetPath) ? assetPath : ROOT + assetPath;
     const promise = new Promise(resolve => {
       loader.load(path, gltf => {
         const model = gltf.scene;
