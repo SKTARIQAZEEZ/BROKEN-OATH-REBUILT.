@@ -5,15 +5,15 @@ import * as THREE from "three";
  * Keeps the established low-key cinematic palette while improving depth,
  * shadow readability and atmosphere without post-processing dependencies.
  */
-export function applyVisualPolish(scene, renderer, { mobile = false } = {}) {
+export function applyVisualPolish(scene, renderer, { mobile = false, lowMemory = false } = {}) {
   scene.background = new THREE.Color(0x0b1118);
   scene.fog = new THREE.FogExp2(0x0d141b, mobile ? 0.014 : 0.012);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.02;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !lowMemory;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.2 : 1.7));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowMemory ? 1 : (mobile ? 1.1 : 1.25)));
 
   scene.traverse(object => {
     if (object.isLight) {
@@ -45,7 +45,7 @@ export function applyVisualPolish(scene, renderer, { mobile = false } = {}) {
     }
   });
 
-  const count = mobile ? 36 : 72;
+  const count = lowMemory ? 20 : (mobile ? 36 : 56);
   const positions = new Float32Array(count * 3);
   const drift = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
