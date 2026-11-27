@@ -16,15 +16,21 @@ const missing=[],invalid=[];
 for(const relative of required){
  const file=path.join(root,relative);
  if(!fs.existsSync(file)){missing.push(relative);continue}
+ const size=fs.statSync(file).size;
  const fd=fs.openSync(file,"r");
  try{
-  const header=Buffer.alloc(12),read=fs.readSync(fd,header,0,12,0);
-  if(read!==12||header.toString("ascii",0,4)!=="glTF"||header.readUInt32LE(8)!==fs.statSync(file).size)invalid.push(relative);
+  const header=Buffer.alloc(20),read=fs.readSync(fd,header,0,20,0);
+  const jsonLength=read===20?header.readUInt32LE(12):0;
+  const jsonType=read===20?header.readUInt32LE(16):0;
+  // Reject Git LFS pointer/stub files as well as malformed or truncated GLBs.
+  if(size<10_000||read!==20||header.toString("ascii",0,4)!=="glTF"||
+     header.readUInt32LE(4)!==2||header.readUInt32LE(8)!==size||
+     jsonType!==0x4E4F534A||jsonLength<2||jsonLength>size-20)invalid.push(relative);
  }finally{fs.closeSync(fd)}
 }
 if(missing.length||invalid.length){
  console.error("BROKEN OATH asset verification failed.");
  if(missing.length)console.error("Missing files:\n"+missing.map(x=>" - "+x).join("\n"));
- if(invalid.length)console.error("Invalid GLB files:\n"+invalid.map(x=>" - "+x).join("\n"));
+ if(invalid.length)console.error("Invalid, truncated, or placeholder GLB files (minimum 10 KB, GLB v2 JSON header required):\n"+invalid.map(x=>" - "+x).join("\n"));
  process.exitCode=1;
-}else console.log("Asset verification passed: 8 cast + 12 gang + 19 NPC GLBs (39 total).");
+}else console.log("Asset verification passed: 8 cast + 12 gang + 19 NPC GLBs (39 total; binary GLB v2 headers verified).");
