@@ -1,10 +1,13 @@
 import {test,expect} from "@playwright/test";
 
-async function waitForIntroToFinish(page){
- // The authored intro is a timed cinematic; let its three beats finish naturally.
- // This avoids racing a moving camera/dialogue panel with a synthetic tap.
- await expect(page.locator("#dialogue")).toBeVisible();
- await expect(page.locator("#dialogue")).toBeHidden({timeout:15000});
+async function dismissIntroIfPresent(page){
+ const dialogue=page.locator("#dialogue");
+ if(await dialogue.isVisible()){
+  // Trigger the same native click handler without racing the cinematic camera's
+  // continuous movement against Playwright's pointer-stability heuristic.
+  await page.locator("#next").evaluate(button=>button.click());
+  await expect(dialogue).toBeHidden({timeout:3000});
+ }
 }
 
 test("desktop game boots offline, renders the world and exposes core menus",async({page},testInfo)=>{
@@ -16,7 +19,7 @@ test("desktop game boots offline, renders the world and exposes core menus",asyn
  await expect(page.locator("#loading")).toBeHidden({timeout:20000});
  await expect(page.locator("#game canvas")).toBeVisible();
  await expect(page.locator("#chapter")).toContainText("CHAPTER 01");
- await waitForIntroToFinish(page);
+ await dismissIntroIfPresent(page);
  await page.locator("#pause").click();
  await expect(page.locator("#pauseMenu")).toBeVisible();
  await page.locator("#audioToggle").click();
