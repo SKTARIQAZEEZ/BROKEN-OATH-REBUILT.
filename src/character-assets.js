@@ -36,7 +36,7 @@ export function attachCharacterAsset(actor,url,{targetHeight=1.8,loader=new GLTF
    for(const child of [...actor.children])if(child!==mount){actor.remove(child);child.traverse?.(o=>{o.geometry?.dispose();if(o.material){for(const mat of Array.isArray(o.material)?o.material:[o.material])mat.dispose()}})}
    actor.add(model);state.model=model;
    if(mount){actor.remove(mount);actor.add(mount);mount.position.set(.34,targetHeight*.58,-.12)}
-   state.mixer=new THREE.AnimationMixer(model);state.clips=clips;state.actions.clear();state.activeAction=null;
+   state.mixer=new THREE.AnimationMixer(model);state.clips=clips.map(source=>{const clip=source.clone();clip.tracks=clip.tracks.filter(track=>{try{const parsed=THREE.PropertyBinding.parseTrackName(track.name);const target=parsed.nodeName?model.getObjectByName(parsed.nodeName):model;if(!target)return false;if(parsed.propertyName==="morphTargetInfluences"&&!target.morphTargetInfluences)return false;return true}catch{return false}});return clip}).filter(clip=>clip.tracks.length);state.actions.clear();state.activeAction=null;
    for(const clip of state.clips)state.actions.set(clip.name,state.mixer.clipAction(clip));
    const play=requested=>{
     const clip=resolveCharacterClip(state.clips,requested);if(!clip)return;
