@@ -2,6 +2,23 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 const CLIP_ALIASES={idle:["Idle"],walk:["Walk"],run:["Run"],guard:["Fighting stance","Block (unarmed)"],attack:["Punch","Punch combo (jab, cross, hook)"],counter:["Punch combo (jab, cross, hook)"],dodge:["Roundhouse kick","Front kick"],finisher:["Front kick","Punch combo (jab, cross, hook)"],hit:["Block (unarmed)","Shot in the chest"]};
 const normalize=value=>String(value||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const lowMemoryDevice=(navigator.deviceMemory||4)<=8;
+function optimizeModelTextures(root){
+ const maxSide=lowMemoryDevice?768:1536,seen=new Set();
+ root.traverse(object=>{
+  if(!object.isMesh||!object.material)return;
+  for(const material of Array.isArray(object.material)?object.material:[object.material]){
+   for(const key of ["map","normalMap","roughnessMap","metalnessMap","aoMap","emissiveMap","alphaMap","bumpMap"]){
+    const texture=material[key];if(!texture?.isTexture||seen.has(texture))continue;seen.add(texture);
+    const image=texture.image;if(!image||!image.width||!image.height)continue;
+    const scale=Math.min(1,maxSide/Math.max(image.width,image.height));if(scale>=1)continue;
+    const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
+    const context=canvas.getContext("2d",{alpha:true});if(!context)continue;
+    try{context.drawImage(image,0,0,canvas.width,canvas.height);texture.image=canvas;texture.generateMipmaps=true;texture.minFilter=THREE.LinearMipmapLinearFilter;texture.magFilter=THREE.LinearFilter;texture.needsUpdate=true}catch{}
+   }
+  }
+ });
+}
 let sharedAnimationClipsPromise=null;
 function sharedAnimationClips(loader){
  if(!sharedAnimationClipsPromise)sharedAnimationClipsPromise=loader.loadAsync("/assets/characters/Azeez.glb").then(gltf=>gltf.animations||[]).catch(()=>[]);
@@ -24,7 +41,7 @@ export function attachCharacterAsset(actor,url,{targetHeight=1.8,loader=new GLTF
    // matches the authored cast rig, so reuse the named cast's animation library.
    if(!clips.length)clips=await sharedAnimationClips(loader);
    if(requestId!==state.requestId)return;
-   const model=gltf.scene,bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+   const model=gltf.scene;optimizeModelTextures(model);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
    if(!Number.isFinite(size.y)||size.y<=0){state.status="error";state.error="GLB has no measurable model height";return}
    model.scale.setScalar(targetHeight/size.y);model.updateMatrixWorld(true);
    const scaled=new THREE.Box3().setFromObject(model);
