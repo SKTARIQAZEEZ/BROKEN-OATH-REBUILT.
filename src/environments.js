@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {decorateEnvironment} from "./environment-detail.js";
 import {createSurfaceMaterial} from "./material-library.js";
 const material=(c,r=.9,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
@@ -15,7 +16,7 @@ export function buildChapterEnvironment(scene,index){
  group.name="CHAPTER_ENV_"+String(index+1).padStart(2,"0")+"_"+name;
  const floor=mesh(new THREE.PlaneGeometry(58,58),createSurfaceMaterial("asphalt",{color:floorColor,seed:index+1}),0,-.02,0,group,"walkable-ground");floor.rotation.x=-Math.PI/2;
  const wallMat=createSurfaceMaterial(kind==="ruins"?"burnt":"concrete",{color:accent,seed:index+11}),dark=createSurfaceMaterial("metal",{color:0x171d22,seed:index+31}),windowMat=material(0x182a35,.35),trim=material(0x77716a);
- const colliders=[],landmarks=[];
+ const colliders=[],landmarks=[];let environmentDisposed=false;
  const addRoadNetwork=()=>{
   const asphalt=material(0x24292b,.94),lane=material(0xb7b3a4,.82),walk=material(0x555756,.95);
   const road=(x,z,w,d,label)=>mesh(new THREE.BoxGeometry(w,.07,d),asphalt,x,.035,z,group,label);
@@ -34,6 +35,22 @@ export function buildChapterEnvironment(scene,index){
  const addCover=(x,z,w=2.4,h=1.15,d=.8,label="cover")=>{const o=mesh(new THREE.BoxGeometry(w,h,d),dark,x,h/2,z,group,label);colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});return o};
  if(!["rooftop","interior","ceremony"].includes(kind))addRoadNetwork();
  if(kind==="sports"){
+  // Load the supplied authored GLB assets; retain the procedural pitch and ball fallback if remote loading fails.
+  const sportsLoader=new GLTFLoader();
+  sportsLoader.load("https://tevy.dev/models/football-pitch/v1/lod0.glb",gltf=>{
+   if(environmentDisposed){gltf.scene.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}});return;}
+   const model=gltf.scene;model.name="authored-football-pitch-glb";
+   const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
+   const fit=Math.min(30/Math.max(size.x,.001),20/Math.max(size.z,.001));
+   model.scale.setScalar(fit);model.position.set(-center.x*fit,.16-center.y*fit,-4-center.z*fit);group.add(model);
+  },undefined,()=>{});
+  sportsLoader.load("https://tevy.dev/models/football/v1/lod0.glb",gltf=>{
+   if(environmentDisposed){gltf.scene.traverse(o=>{o.geometry?.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.dispose());else o.material.dispose()}});return;}
+   const ball=gltf.scene;ball.name="authored-football-glb";
+   const bounds=new THREE.Box3().setFromObject(ball),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
+   const diameter=Math.max(size.x,size.y,size.z),fit=.44/Math.max(diameter,.001);
+   ball.scale.setScalar(fit);ball.position.set(-center.x*fit,.22-center.y*fit,-4-center.z*fit);group.add(ball);
+  },undefined,()=>{});
   // Full school football ground: maintained turf, pitch markings, goal frames and net grids.
   const turf=material(0x3e6040,.96),stripe=material(0xb8b7a8,.88),goalMat=material(0xd1d0c8,.48,.18),netMat=new THREE.MeshBasicMaterial({color:0xaaa99d,transparent:true,opacity:.42});
   mesh(new THREE.BoxGeometry(30,.16,20),turf,0,.04,-4,group,"football-pitch");
@@ -200,7 +217,7 @@ export function buildChapterEnvironment(scene,index){
  });
  const spawn=new THREE.Vector3(0,0,8);
  scene.add(group);
- return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},resolvePosition(position,radius=.42){const p=position.clone();p.x=THREE.MathUtils.clamp(p.x,-28+radius,28-radius);p.z=THREE.MathUtils.clamp(p.z,-28+radius,28-radius);for(const box of colliders){const minX=box.x-box.halfX-radius,maxX=box.x+box.halfX+radius,minZ=box.z-box.halfZ-radius,maxZ=box.z+box.halfZ+radius;if(p.x>minX&&p.x<maxX&&p.z>minZ&&p.z<maxZ){const dx=Math.min(Math.abs(p.x-minX),Math.abs(maxX-p.x)),dz=Math.min(Math.abs(p.z-minZ),Math.abs(maxZ-p.z));if(dx<dz)p.x=p.x<box.x?minX:maxX;else p.z=p.z<box.z?minZ:maxZ}}return p},dispose(){scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>{m.map?.dispose();m.bumpMap?.dispose();m.dispose()});else{o.material.map?.dispose();o.material.bumpMap?.dispose();o.material.dispose()}}})}};
+ return {group,name,kind,spawn,objectiveAnchors:anchors,colliders,landmarks,walkableBounds:{minX:-28,maxX:28,minZ:-28,maxZ:28},resolvePosition(position,radius=.42){const p=position.clone();p.x=THREE.MathUtils.clamp(p.x,-28+radius,28-radius);p.z=THREE.MathUtils.clamp(p.z,-28+radius,28-radius);for(const box of colliders){const minX=box.x-box.halfX-radius,maxX=box.x+box.halfX+radius,minZ=box.z-box.halfZ-radius,maxZ=box.z+box.halfZ+radius;if(p.x>minX&&p.x<maxX&&p.z>minZ&&p.z<maxZ){const dx=Math.min(Math.abs(p.x-minX),Math.abs(maxX-p.x)),dz=Math.min(Math.abs(p.z-minZ),Math.abs(maxZ-p.z));if(dx<dz)p.x=p.x<box.x?minX:maxX;else p.z=p.z<box.z?minZ:maxZ}}return p},dispose(){environmentDisposed=true;scene.remove(group);group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>{m.map?.dispose();m.bumpMap?.dispose();m.dispose()});else{o.material.map?.dispose();o.material.bumpMap?.dispose();o.material.dispose()}}})}};
 }
 export const CHAPTER_ENVIRONMENT_NAMES=CHAPTER_ZONES.map(x=>x[0]);
 export const CHAPTER_ENVIRONMENT_KINDS=CHAPTER_ZONES.map(x=>x[3]);
