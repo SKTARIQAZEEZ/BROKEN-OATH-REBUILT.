@@ -67,8 +67,60 @@ export function buildChapterEnvironment(scene,index){
   mesh(new THREE.BoxGeometry(4,1.7,.18),dark,0,3.2,-20,group,"school-scoreboard");
   for(const x of [-1.35,1.35])mesh(new THREE.BoxGeometry(1.1,.7,.08),material(0x263b3b),x,3.2,-19.88,group,"scoreboard-display");
  }else if(kind==="ruins"){
-  for(let i=0;i<15;i++){const h=1.1+(i%4)*.85,x=-12+(i%5)*6,z=-10+Math.floor(i/5)*9;addCover(x,z,3,h,2,"burned-rubble")}
-  for(let i=0;i<8;i++)mesh(new THREE.ConeGeometry(.35,.9,6),material(0x171514),-14+i*4,.45,-17+(i%2)*3,group,"debris");
+  // Burned family home: a traversable, partially collapsed structure rather than
+  // a field of generic rubble boxes. The open front and broken roof preserve entry.
+  const ash=material(0x242322,.98),charred=material(0x171615,.98),soot=material(0x292321,.98),burntBrick=material(0x40332e,.96),ember=material(0x7d351d,.7),wood=material(0x29201b,.98);
+  mesh(new THREE.BoxGeometry(15,.16,11),ash,0,.02,-8,group,"burned-home-foundation");
+  mesh(new THREE.BoxGeometry(14,.025,10),material(0x302c29),0,.115,-8,group,"ash-covered-interior-floor");
+  const remnant=(x,y,z,w,h,d,label,mat=charred)=>{const o=mesh(new THREE.BoxGeometry(w,h,d),mat,x,y,z,group,label);colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});return o};
+  // Rear wall and two fractured side walls; leave a broad, accessible front opening.
+  remnant(0,2.25,-13.1,14,.45,.42,"burned-rear-wall-top",burntBrick);
+  remnant(-6.75,1.35,-8, .5,2.7,10,"burned-west-wall",charred);
+  remnant(6.75,1.8,-8,.5,3.6,10,"burned-east-wall-remnant",burntBrick);
+  remnant(-3.9,1.15,-3.05,6.2,2.3,.42,"burned-front-wall-left",soot);
+  remnant(4.9,.8,-3.05,4.2,1.6,.42,"burned-front-wall-right",charred);
+  // Broken window lintels and blackened openings.
+  for(const x of [-5.9,5.9]){
+   mesh(new THREE.BoxGeometry(1.65,.16,.28),wood,x,2.2,-8.1,group,"charred-window-lintel");
+   mesh(new THREE.BoxGeometry(.12,1.35,.18),charred,x-0.78,1.48,-8.08,group,"burned-window-frame");
+   mesh(new THREE.BoxGeometry(.12,1.35,.18),charred,x+0.78,1.48,-8.08,group,"burned-window-frame");
+  }
+  // Collapsed roof: exposed, angled rafters and a fallen roof slab.
+  for(let i=0;i<7;i++){
+   const beam=mesh(new THREE.BoxGeometry(.22,5.8,.24),wood,-5.2+i*1.72,2.05,-8.2,group,"collapsed-charred-rafter");
+   beam.rotation.z=(i%2?1:-1)*(.22+(i%3)*.09);beam.rotation.x=(i%2?1:-1)*.12;
+  }
+  const slab=mesh(new THREE.BoxGeometry(5.8,.32,3.2),material(0x302a27),1.2,.55,-7.1,group,"fallen-roof-section");
+  slab.rotation.z=-.18;slab.rotation.x=.12;
+  // Broken masonry, scorched furniture remains and scattered roof tiles.
+  for(let i=0;i<22;i++){
+   const x=-7.2+(i*7%15),z=-13.2+(i*11%11),w=.45+(i%4)*.28,h=.22+(i%3)*.22,d=.4+(i%3)*.25;
+   const rubble=mesh(new THREE.BoxGeometry(w,h,d),i%3?burntBrick:charred,x,h/2,z,group,"burned-masonry-rubble");
+   rubble.rotation.y=(i*1.7)%Math.PI;rubble.rotation.z=((i%5)-2)*.08;
+   if(i%4===0)colliders.push({x,z,halfX:w/2,halfZ:d/2,height:h});
+  }
+  for(let i=0;i<9;i++){
+   const tile=mesh(new THREE.BoxGeometry(1.1,.12,.62),material(0x292522),-6+(i%5)*2.8,.18,-14+Math.floor(i/5)*9,group,"fallen-roof-tile");
+   tile.rotation.y=i*.43;tile.rotation.z=(i%3-1)*.16;
+  }
+  // Soot staining and extinguished ember pockets; no active fire obscures play.
+  for(const [x,z] of [[-6,-12],[5,-12],[-5,-4],[4,-5]]){
+   const stain=mesh(new THREE.CircleGeometry(1.2,16),soot,x,.13,z,group,"soot-and-ash-stain");stain.rotation.x=-Math.PI/2;
+  }
+  for(const [x,z] of [[-4,-10],[3,-6]]){
+   const glow=new THREE.PointLight(0x9b3e1d,.65,3);glow.position.set(x,.45,z);group.add(glow);
+   mesh(new THREE.SphereGeometry(.07,6,5),ember,x,.22,z,group,"faint-extinguished-ember");
+  }
+  // Burnt porch posts and a recognizable damaged family-home threshold.
+  for(const x of [-2.2,2.2]){
+   const post=mesh(new THREE.BoxGeometry(.18,2.2,.18),wood,x,1.1,-2.45,group,"burned-porch-post");
+   post.rotation.z=x<0?.08:-.12;colliders.push({x,z:-2.45,halfX:.12,halfZ:.12,height:2.2});
+  }
+  mesh(new THREE.BoxGeometry(4.8,.18,1.5),material(0x39302b),0,.12,-1.7,group,"damaged-front-porch");
+  for(let i=0;i<12;i++){
+   const shard=mesh(new THREE.ConeGeometry(.18,.42,5),material(0x211d1a),-8+(i*1.43)%16,.21,-15+(i*2.1)%13,group,"charred-debris-shard");
+   shard.rotation.z=Math.PI;
+  }
  }else if(kind==="warehouse"||kind==="industrial"||kind==="fortress"||kind==="compound"){
   for(let x=-18;x<=18;x+=9)addBuilding(x,-19,7,kind==="fortress"?13:kind==="compound"?11:9,6,"industrial-structure");
   for(let z=-12;z<=12;z+=8)addCover(-7,z,2.4,2,2,"crate-stack");
