@@ -34,7 +34,8 @@ const PLACEMENTS = {
   rooftop: [["rock",-22,18,1.6],["stump",22,18,1.2]],
   industrial: [
     ["pickup",19,15,4.7], ["deadTree",-22,-20,5],
-    ["log",-20,8,1.5], ["rock",21,-18,1.8]
+    ["log",-20,8,1.5], ["rock",21,-18,1.8],
+    ["barn",-17,-18,9]
   ],
   ruins: [
     ["deadTree",-18,-14,5], ["stump",-16,-2,1.4],
