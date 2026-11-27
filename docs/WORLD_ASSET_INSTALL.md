@@ -15,7 +15,7 @@ fallback and attempts to load the following GLBs from `public/assets/world/`:
 - `low-poly-grey-rock.glb`
 - `red-fire-truck.glb`
 - `red-sports-car.glb`
-- `red-wooden-barn.glb`
+- `red-wooden-barn.glb`\n\nThe following five additional models are loaded directly from the URLs you supplied:\n\n- Red cottage — `https://tevy.dev/models/red-cottage/v2/lod0.glb`\n- Apartment block — `https://tevy.dev/models/apartment-block/v2/lod0.glb`\n- Apartment room — `https://tevy.dev/models/apartment-room/v2/lod0.glb`\n- Bald cypress — `https://tevy.dev/models/bald-cypress/v1/lod0.glb`\n- Dirt bike — `https://tevy.dev/models/dirt-bike/v1/lod0.glb`
 
 ## Install the uploaded model files
 
