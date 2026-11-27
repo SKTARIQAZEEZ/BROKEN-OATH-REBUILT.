@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 const CLIP_ALIASES={idle:["Idle"],walk:["Walk"],run:["Run"],guard:["Fighting stance","Block (unarmed)"],attack:["Punch","Punch combo (jab, cross, hook)"],counter:["Punch combo (jab, cross, hook)"],dodge:["Roundhouse kick","Front kick"],finisher:["Front kick","Punch combo (jab, cross, hook)"],hit:["Block (unarmed)","Shot in the chest"]};
 const normalize=value=>String(value||"").toLowerCase().replace(/[^a-z0-9]/g,"");
-const lowMemoryDevice=(navigator.deviceMemory||4)<=8;
+const lowMemoryDevice=typeof navigator!=="undefined"&&(navigator.deviceMemory||4)<=8;
 function optimizeModelTextures(root){
  const maxSide=lowMemoryDevice?768:1536,seen=new Set();
  root.traverse(object=>{
