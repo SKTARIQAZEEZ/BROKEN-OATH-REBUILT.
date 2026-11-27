@@ -18,7 +18,12 @@ const ASSETS = {
   rock: "low-poly-grey-rock.glb",
   fireTruck: "red-fire-truck.glb",
   sportsCar: "red-sports-car.glb",
-  barn: "red-wooden-barn.glb"
+  barn: "red-wooden-barn.glb",
+  cottage: "https://tevy.dev/models/red-cottage/v2/lod0.glb",
+  apartment: "https://tevy.dev/models/apartment-block/v2/lod0.glb",
+  apartmentRoom: "https://tevy.dev/models/apartment-room/v2/lod0.glb",
+  cypress: "https://tevy.dev/models/bald-cypress/v1/lod0.glb",
+  dirtBike: "https://tevy.dev/models/dirt-bike/v1/lod0.glb"
 };
 
 const PLACEMENTS = {
@@ -63,7 +68,7 @@ const PLACEMENTS = {
     ["pickup",20,15,4.8], ["police",-20,15,4.8],
     ["deadTree",-22,-20,5], ["rock",22,-18,2]
   ],
-  interior: [["rock",24,22,1.4]],
+  interior: [["apartmentRoom",0,-2,16]],
   safehouse: [
     ["house",-22,-10,8], ["house",22,-10,8],
     ["tree",-25,-18,5], ["tree",25,-18,5], ["pickup",20,15,4.8]
@@ -96,7 +101,7 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
   let disposed = false;
   const pending = [];
   for (const [key,x,z,targetSize] of placements) {
-    const path = ROOT + ASSETS[key];
+    const assetPath = ASSETS[key];\n    const path = /^https?:\\/\\//i.test(assetPath) ? assetPath : ROOT + assetPath;
     const promise = new Promise(resolve => {
       loader.load(path, gltf => {
         const model = gltf.scene;
@@ -119,14 +124,14 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
         group.add(model);
         const finalSize = fitted.getSize(new THREE.Vector3());
         const center = new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3());
-        if (key !== "tree" && key !== "deadTree" && key !== "house" && key !== "barn") {
+        if (key !== "tree" && key !== "deadTree" && key !== "cypress" && key !== "house" && key !== "cottage" && key !== "apartment" && key !== "apartmentRoom" && key !== "barn") {
           colliders.push({
             x: center.x, z: center.z,
             halfX: Math.max(.25, finalSize.x * .46),
             halfZ: Math.max(.25, finalSize.z * .46),
             height: Math.max(.5, finalSize.y)
           });
-        } else if (key === "house") {
+        } else if (key === "house" || key === "cottage" || key === "apartment" || key === "apartmentRoom") {
           // Keep the interior traversable: collide against four perimeter walls,
           // leaving a front entrance gap instead of blocking the entire footprint.
           const hx = Math.max(1.5, finalSize.x * .46);
@@ -146,7 +151,7 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
             height: Math.max(2, finalSize.y)
           });
         } else {
-          colliders.push({x,z,halfX:.55,halfZ:.55,height:Math.max(2,finalSize.y)});
+          colliders.push({x,z,halfX:key==="cypress"? .7:.55,halfZ:key==="cypress"? .7:.55,height:Math.max(2,finalSize.y)});
         }
         resolve(true);
       }, undefined, () => resolve(false));
