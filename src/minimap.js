@@ -21,12 +21,15 @@ export function createMiniMap({onOpenMap=()=>{}}={}){
  svg.append(el("path",{d:"M-5 28 Q25 20 48 34 T105 25 M-5 70 Q25 62 50 72 T105 62 M22 -5 Q30 25 43 48 T35 105 M72 -5 Q65 24 76 50 T68 105",class:"mini-road-edge"}));
  svg.append(el("path",{d:"M-5 28 Q25 20 48 34 T105 25 M-5 70 Q25 62 50 72 T105 62 M22 -5 Q30 25 43 48 T35 105 M72 -5 Q65 24 76 50 T68 105",class:"mini-road"}));
  for(let y=34;y<68;y+=9)for(let x=33;x<70;x+=9)svg.append(el("rect",{x,y,width:5,height:4,rx:.5,fill:"#3b4848",stroke:"#69716b","stroke-width":".35"}));
+ const route=el("polyline",{points:"",fill:"none",stroke:"#e6b66f","stroke-width":"1.8","stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":"2.2 1.4",opacity:".95"});
  const objective=el("circle",{cx:50,cy:50,r:3.5,class:"mini-objective"}),player=el("path",{d:"M50 43 L45 56 L50 53 L55 56 Z",class:"mini-player"});
- svg.append(objective,player);root.append(svg);
+ svg.append(route,objective,player);root.append(svg);
+ const distance=document.createElement("div");distance.className="mini-north";distance.style.top="auto";distance.style.bottom="22px";distance.textContent="";root.append(distance);
  const top=document.createElement("div");top.className="mini-top";top.textContent="LOCAL MAP";root.append(top);
  const north=document.createElement("div");north.className="mini-north";north.textContent="N ↑";root.append(north);
  const open=document.createElement("div");open.className="mini-map-open";open.textContent="M · FULL MAP";root.append(open);
  root.addEventListener("click",()=>onOpenMap());root.style.pointerEvents="auto";root.style.cursor="pointer";root.title="Open campaign map";
  function update(position,target,yaw,chapter){const px=50+Math.max(-40,Math.min(40,position.x*1.25)),py=50+Math.max(-40,Math.min(40,position.z*1.25));player.setAttribute("transform",`translate(${px-50} ${py-50}) rotate(${(yaw||0)*180/Math.PI} 50 50)`);if(target){const tx=50+Math.max(-40,Math.min(40,(target.x-position.x)*1.25)),ty=50+Math.max(-40,Math.min(40,(target.z-position.z)*1.25));objective.setAttribute("cx",tx);objective.setAttribute("cy",ty);objective.style.display="";}else objective.style.display="none";top.textContent="CH "+String(chapter+1).padStart(2,"0")+" · LOCAL MAP"}
- return {element:root,update};
+ function updateRoute(path=[],meters=null,origin={x:0,z:0}){const pts=[origin,...(path||[])].map(p=>`${50+Math.max(-40,Math.min(40,(p.x-origin.x)*1.25))},${50+Math.max(-40,Math.min(40,(p.z-origin.z)*1.25))}`);route.setAttribute("points",pts.join(" "));distance.textContent=Number.isFinite(meters)?(meters<1000?Math.round(meters)+" M":(meters/1000).toFixed(1)+" KM"):"";distance.style.display=meters===null?"none":""}
+ return {element:root,update,updateRoute};
 }
