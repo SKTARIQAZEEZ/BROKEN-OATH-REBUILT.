@@ -15,7 +15,7 @@ test("desktop game boots offline, renders the world and exposes core menus",asyn
  const errors=[];
  page.on("pageerror",error=>errors.push(error.message));
  await page.route("https://**/*",route=>route.abort());
- await page.goto("/");
+ await page.goto("/?e2e=1");
  await expect(page.locator("#loading")).toBeHidden({timeout:20000});
  await expect(page.locator("#game canvas")).toBeVisible();
  await expect(page.locator("#chapter")).toContainText("CHAPTER 01");
@@ -36,7 +36,7 @@ test("mobile layout exposes touch controls and camera surface",async({page},test
  const errors=[];
  page.on("pageerror",error=>errors.push(error.message));
  await page.route("https://**/*",route=>route.abort());
- await page.goto("/");
+ await page.goto("/?e2e=1");
  await expect(page.locator("#loading")).toBeHidden({timeout:20000});
  await expect(page.locator("#game canvas")).toBeVisible();
  await dismissIntroIfPresent(page);
