@@ -125,7 +125,20 @@ export function addAuthoredWorldAssets({ group, kind, colliders }) {
             halfZ: Math.max(.25, finalSize.z * .46),
             height: Math.max(.5, finalSize.y)
           });
-        } else if (key === "house" || key === "barn") {
+        } else if (key === "house") {
+          // Keep the interior traversable: collide against four perimeter walls,
+          // leaving a front entrance gap instead of blocking the entire footprint.
+          const hx = Math.max(1.5, finalSize.x * .46);
+          const hz = Math.max(1.5, finalSize.z * .46);
+          const wall = Math.max(.22, Math.min(hx,hz) * .12);
+          colliders.push(
+            {x:x-hx+wall/2,z,halfX:wall/2,halfZ:hz,height:finalSize.y},
+            {x:x+hx-wall/2,z,halfX:wall/2,halfZ:hz,height:finalSize.y},
+            {x,z:z-hz+wall/2,halfX:hx,halfZ:wall/2,height:finalSize.y},
+            {x:x-hx*.48,z:z+hz-wall/2,halfX:hx*.48,halfZ:wall/2,height:finalSize.y},
+            {x:x+hx*.48,z:z+hz-wall/2,halfX:hx*.48,halfZ:wall/2,height:finalSize.y}
+          );
+        } else if (key === "barn") {
           colliders.push({
             x, z, halfX: Math.max(1, finalSize.x * .42),
             halfZ: Math.max(1, finalSize.z * .42),
